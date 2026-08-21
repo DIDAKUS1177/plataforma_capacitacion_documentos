@@ -1,0 +1,4 @@
+# SPA: cualquier ruta que no sea un archivo ni una función devuelve el index.
+# Las funciones de /api/* tienen prioridad sobre esta regla, así que no se ven
+# afectadas.
+/*  /index.html  200

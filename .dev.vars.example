@@ -1,0 +1,30 @@
+# Copia este archivo a `.dev.vars` para desarrollo local (wrangler lo lee solo).
+# En producción, las mismas variables van en Cloudflare Pages →
+# Settings → Environment variables. .dev.vars está en .gitignore: la llave
+# privada NUNCA entra al repo.
+
+GOOGLE_SERVICE_ACCOUNT_EMAIL="didakus@adcformatos.iam.gserviceaccount.com"
+# Pega el campo private_key del service-account.json, con los \n tal cual.
+GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY-----\n"
+
+SHEET_ID="1z0Wcc2-A0S6JCVjm_e3kfcXZgZMgr3g_VpOTMq6X3IU"
+
+# Dominio corporativo exigido en el correo. Vacío = se acepta cualquiera.
+DOMINIO_CORPORATIVO="ademincol.com"
+
+# Copia oculta de cada constancia. Opcional.
+CORREO_CALIDAD=""
+
+# Buzón de Workspace desde el que salen los correos. Requiere delegación de
+# dominio para el service account (ver README). Vacío = no se manda correo,
+# pero el registro igual se guarda.
+GMAIL_REMITENTE=""
+
+# Firma dibujada además de la casilla de aceptación.
+EXIGE_FIRMA="false"
+CARPETA_FIRMAS_ID=""
+
+# Listado Maestro para el desplegable de aplicaciones (solo lectura).
+# Vacío = se usa la lista de respaldo del código.
+LISTADO_MAESTRO_ID=""
+LISTADO_MAESTRO_HOJA="Listado Maestro"

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.wrangler/
+
+# Secretos: la llave del service account NUNCA entra al repo.
+.dev.vars
+.env
+.env.local
+*service-account*.json
+
+.DS_Store
+*.log
+.vscode/
+tsconfig.tsbuildinfo
