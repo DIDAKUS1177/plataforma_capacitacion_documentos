@@ -7,11 +7,33 @@ export interface RespuestaEvaluacion {
   correcta: boolean;
 }
 
+/**
+ * Una fila del Listado Maestro de Aplicaciones (el Sheet de calidad).
+ * Es la misma forma que se usa para elegir la capacitación y para el
+ * desplegable del buzón de mejoras: una sola fuente para las dos cosas.
+ */
+export interface Aplicacion {
+  /** APP-022 */
+  id: string;
+  nombre: string;
+  /** MT, VT / API 510, PMI / OCR… tal cual está en el Sheet. */
+  tecnica: string;
+  /** Código ADC del formato, ej. F-OPE-C-105. Puede venir vacío. */
+  codigo: string;
+  /** Versión del formato. Puede venir vacía. */
+  version: string;
+  estado: string;
+}
+
 export interface DatosConstancia {
   nombre: string;
   cedula: string;
   correo: string;
   cargo: string;
+  /** Aplicación para la que se capacita. */
+  appId: string;
+  appNombre: string;
+  tecnica: string;
   aceptaDeclaracion: boolean;
   aceptaDatos: boolean;
   firma: string; // dataURL PNG de la firma dibujada, o "" si no se exige

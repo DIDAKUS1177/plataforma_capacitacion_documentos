@@ -2,9 +2,14 @@
 
 Capacitación de inspectores y buzón de mejoras de ADEMINCOL.
 
-Una sola aplicación web: el curso por módulos, la evaluación, la constancia
-firmada y el formulario para reportar fallas o proponer mejoras. Todo se guarda
-en Google Sheets.
+Una sola aplicación web con **dos pestañas**:
+
+- **Capacitación** — el inspector elige la aplicación sobre la que se va a
+  capacitar (la lista sale del Listado Maestro de Calidad), hace los módulos,
+  presenta la evaluación y firma su constancia.
+- **Reportar** — el buzón de fallas y propuestas de mejora.
+
+Todo se guarda en Google Sheets.
 
 Mismo stack y mismo lenguaje visual que el frontend de ADEMINCOL Central:
 React 19 + Vite + TypeScript + Tailwind 4, con los mismos tokens de color.
@@ -14,7 +19,7 @@ React 19 + Vite + TypeScript + Tailwind 4, con los mismos tokens de color.
 La primera versión se hizo en Apps Script y se descartó: el editor y el runtime
 dan problemas y no hay un flujo de trabajo con git de verdad.
 
-Aquí no hay Apps Script en ninguna parte. La página es estática y las tres
+Aquí no hay Apps Script en ninguna parte. La página es estática y las cuatro
 funciones que hablan con Google corren en **Cloudflare Pages Functions**, con la
 llave del service account guardada como secreto del proyecto — nunca en el
 código que descarga el navegador.
@@ -36,21 +41,34 @@ Inspector (celular)
 | Ruta | Qué hace |
 |---|---|
 | `GET /api/config` | Dominio corporativo y si se exige firma. Nada secreto |
-| `GET /api/aplicaciones` | Lista para el desplegable del buzón (Listado Maestro, con respaldo) |
+| `GET /api/aplicaciones` | Catálogo de apps del Listado Maestro de Calidad (solo lectura, caché 6 h) |
 | `POST /api/constancia` | Valida, evita duplicados, escribe y manda el correo |
 | `POST /api/mejora` | Radica la falla o la sugerencia y devuelve el número |
 
 ## Estructura
 
 ```
-src/contenido/curso.ts    ← EL ÚNICO ARCHIVO QUE SE EDITA para cambiar el curso
-src/pages/                 Inicio · Módulo · Evaluación · Constancia · Reportar
-src/components/            Layout (pestañas + progreso), ui, FirmaPad
-src/lib/progreso.tsx       Qué módulos vio y si aprobó
-shared/validacion.ts       Validación compartida cliente ↔ servidor
-functions/api/             Las cuatro funciones y sus utilidades
-scripts/init_sheet.py      Crea las hojas y encabezados del Sheet
+src/contenido/curso.ts     ← EL ÚNICO ARCHIVO QUE SE EDITA para cambiar el curso
+src/pages/                  Selector · Inicio · Módulo · Evaluación · Constancia · Reportar
+src/components/             Layout (dos niveles de pestañas), ui, FirmaPad
+src/lib/aplicaciones.tsx    Catálogo del Listado Maestro, cargado una sola vez
+src/lib/progreso.tsx        App elegida, módulos vistos y si aprobó
+src/lib/useCursoDeLaApp.ts  Resuelve la app de la URL y arma su curso
+shared/validacion.ts        Validación compartida cliente ↔ servidor
+functions/api/              Las cuatro funciones y sus utilidades
+scripts/init_sheet.py       Crea/completa las hojas y encabezados del Sheet
 ```
+
+### Rutas
+
+| Ruta | Qué es |
+|---|---|
+| `/capacitacion` | Selector de aplicación, con buscador |
+| `/capacitacion/APP-022` | Portada del curso de esa app |
+| `/capacitacion/APP-022/modulo/1` | Un módulo |
+| `/capacitacion/APP-022/evaluacion` | Se abre al ver todos los módulos |
+| `/capacitacion/APP-022/constancia` | Se abre al aprobar |
+| `/reportar?app=APP-022` | Buzón, con la app precargada |
 
 `shared/validacion.ts` lo usan los dos lados a propósito: si viviera duplicado
 se desincroniza y el servidor termina aceptando lo que el formulario rechazaba.
@@ -106,13 +124,29 @@ correo.
 
 ## Editar el curso
 
-Todo está en [`src/contenido/curso.ts`](src/contenido/curso.ts):
+Todo está en [`src/contenido/curso.ts`](src/contenido/curso.ts).
+
+**Tronco común** (`CURSO_BASE`) — lo que se le enseña a todo inspector, sin
+importar la app:
 
 - `modulos` — agregar, quitar o reordenar. Las pestañas, la barra de progreso y
   los botones Anterior/Siguiente se rearman solos.
 - `preguntas` — `correcta` es el **índice** de la opción correcta, desde 0.
 - `version` — **súbela cada vez que cambies el contenido.** Queda escrita en
   cada constancia, así se sabe quién se capacitó con qué material.
+
+**Contenido propio de una app** — `MODULOS_POR_APP` y `PREGUNTAS_POR_APP`, con
+el ID del Listado Maestro como clave:
+
+```ts
+MODULOS_POR_APP["APP-022"] = [
+  { id: "mt1", titulo: "Criterios de aceptación en MT", minutos: 6, html: `<p>…</p>` },
+];
+```
+
+Una app sin entrada recibe solo el tronco común — que es lo correcto mientras no
+haya material propio de esa técnica. El mínimo para aprobar se recalcula al 80 %
+de las preguntas, así que agregar preguntas de técnica no descuadra nada.
 
 Para imágenes: súbelas a Drive con permiso de lectura y usa
 `<img src="https://lh3.googleusercontent.com/d/ID_DEL_ARCHIVO">`.
@@ -124,22 +158,39 @@ Para imágenes: súbelas a Drive con permiso de lectura y usa
 - Se puede repetir la evaluación; las falladas quedan marcadas.
 - Se guarda `minutos_en_capacitacion`: si alguien "hizo" el curso en 40
   segundos, se nota.
-- No se registra dos veces la misma cédula en el mismo curso — pasa cuando se
-  cae la señal y vuelven a enviar.
+- No se registra dos veces la misma cédula **en la misma aplicación** — pasa
+  cuando se cae la señal y vuelven a enviar. En otra app sí puede registrarse.
+- Cambiar de aplicación a mitad de camino reinicia el avance: no se heredan
+  módulos vistos ni una evaluación aprobada de otra técnica.
+- Las apps en estado `Out` del Listado Maestro no aparecen en el selector.
 - Correo obligatoriamente del dominio corporativo.
 - Casilla de autorización de tratamiento de datos (Ley 1581), porque se guarda
   la cédula.
 - Las fechas se escriben en hora de Bogotá, no en UTC: si no, un registro de las
   8 p.m. queda con la fecha del día siguiente.
 
-## Enlaces desde las apps de AppSheet
+## Cómo entra el inspector
 
-En la descripción de cada app, dos líneas y dos enlaces. El de reportar acepta
-la app precargada:
+No hay usuario ni contraseña: se entra por el enlace.
+
+1. Abre `https://<tu-sitio>.pages.dev`.
+2. Elige en el buscador la aplicación sobre la que se va a capacitar.
+3. Módulos → evaluación → constancia con nombre, cédula y correo.
+
+La forma práctica de repartirlo es un **QR** de esa URL, pegado en la tablet y
+puesto en la descripción de cada app de AppSheet.
+
+### Enlaces desde las apps de AppSheet
+
+En la descripción de cada app, dos líneas y dos enlaces:
 
 ```
-https://<tu-sitio>.pages.dev/reportar?app=APP-022%20Part%C3%ADculas%20Magn%C3%A9ticas%20MT
+📘 Capacitación → https://<tu-sitio>.pages.dev/capacitacion/APP-022
+💡 Reportar     → https://<tu-sitio>.pages.dev/reportar?app=APP-022
 ```
+
+Los dos abren directo en la app correcta, sin que el inspector tenga que
+buscarla en la lista.
 
 ## Qué NO toca
 

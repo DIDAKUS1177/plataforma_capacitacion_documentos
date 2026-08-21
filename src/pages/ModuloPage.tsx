@@ -1,24 +1,30 @@
 import { useEffect } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { CURSO } from "../contenido/curso";
+import { useCursoDeLaApp } from "../lib/useCursoDeLaApp";
 import { useProgreso } from "../lib/progreso";
-import { Boton, Tarjeta, Titulo } from "../components/ui";
+import { Boton, Cargando, Tarjeta, Titulo } from "../components/ui";
 
 export function ModuloPage() {
   const { numero } = useParams();
-  const indice = Number(numero) - 1;
-  const modulo = CURSO.modulos[indice];
+  const { app, curso, noExiste } = useCursoDeLaApp();
   const { marcarVisto } = useProgreso();
   const ir = useNavigate();
+
+  const indice = Number(numero) - 1;
+  const modulo = curso?.modulos[indice];
 
   useEffect(() => {
     if (modulo) marcarVisto(modulo.id);
   }, [modulo, marcarVisto]);
 
-  // Una URL inventada (/modulo/9) no debe dejar la página en blanco.
-  if (!modulo) return <Navigate to="/" replace />;
+  if (noExiste) return <Navigate to="/capacitacion" replace />;
+  if (!app || !curso) return <Cargando texto="Preparando la capacitación…" />;
 
-  const esUltimo = indice === CURSO.modulos.length - 1;
+  const base = `/capacitacion/${encodeURIComponent(app.id)}`;
+  // Una URL inventada (/modulo/9) no debe dejar la página en blanco.
+  if (!modulo) return <Navigate to={base} replace />;
+
+  const esUltimo = indice === curso.modulos.length - 1;
 
   return (
     <Tarjeta>
@@ -33,11 +39,11 @@ export function ModuloPage() {
 
       <div className="mt-6 flex flex-wrap gap-3">
         {indice > 0 && (
-          <Boton variante="secundaria" onClick={() => ir(`/modulo/${indice}`)}>
+          <Boton variante="secundaria" onClick={() => ir(`${base}/modulo/${indice}`)}>
             Anterior
           </Boton>
         )}
-        <Boton onClick={() => ir(esUltimo ? "/evaluacion" : `/modulo/${indice + 2}`)}>
+        <Boton onClick={() => ir(esUltimo ? `${base}/evaluacion` : `${base}/modulo/${indice + 2}`)}>
           {esUltimo ? "Ir a la evaluación" : "Siguiente"}
         </Boton>
       </div>

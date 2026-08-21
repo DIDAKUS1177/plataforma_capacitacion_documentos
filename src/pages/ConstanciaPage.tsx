@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
-import { CURSO } from "../contenido/curso";
+import { useCursoDeLaApp } from "../lib/useCursoDeLaApp";
 import { useProgreso } from "../lib/progreso";
 import { obtenerConfig, registrarConstancia, ErrorApi, type ConfigServidor } from "../api/cliente";
 import { validarConstancia } from "../../shared/validacion";
-import { Aviso, Boton, CampoTexto, Casilla, Tarjeta, Titulo } from "../components/ui";
+import { Aviso, Boton, CampoTexto, Cargando, Casilla, Tarjeta, Titulo } from "../components/ui";
 import { FirmaPad } from "../components/FirmaPad";
 import type { DatosConstancia } from "../../shared/tipos";
 
 export function ConstanciaPage() {
+  const { app, curso, noExiste } = useCursoDeLaApp();
   const progreso = useProgreso();
 
   const [config, setConfig] = useState<ConfigServidor>({ dominio: "", exigeFirma: false });
@@ -19,7 +20,7 @@ export function ConstanciaPage() {
   const [cargo, setCargo] = useState("");
   const [firma, setFirma] = useState("");
   const [declaracion, setDeclaracion] = useState(false);
-  const [datos, setDatos] = useState(false);
+  const [datosOk, setDatosOk] = useState(false);
 
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -27,25 +28,36 @@ export function ConstanciaPage() {
 
   useEffect(() => {
     // Si falla, se queda con los valores por defecto: el servidor valida igual.
-    obtenerConfig().then(setConfig).catch(() => {});
+    obtenerConfig()
+      .then(setConfig)
+      .catch(() => {});
   }, []);
 
-  if (!progreso.aprobada) return <Navigate to="/" replace />;
+  if (noExiste) return <Navigate to="/capacitacion" replace />;
+  if (!app || !curso) return <Cargando />;
+  if (!progreso.aprobada) {
+    return <Navigate to={`/capacitacion/${encodeURIComponent(app.id)}`} replace />;
+  }
 
   async function enviar() {
+    if (!app || !curso) return;
+
     const payload: DatosConstancia = {
       nombre,
       cedula,
       correo,
       cargo,
       firma,
+      appId: app.id,
+      appNombre: app.nombre,
+      tecnica: app.tecnica,
       aceptaDeclaracion: declaracion,
-      aceptaDatos: datos,
-      cursoCodigo: CURSO.codigo,
-      cursoNombre: CURSO.nombre,
-      cursoVersion: CURSO.version,
+      aceptaDatos: datosOk,
+      cursoCodigo: curso.codigo,
+      cursoNombre: curso.nombre,
+      cursoVersion: curso.version,
       puntaje: progreso.puntaje,
-      totalPreguntas: CURSO.preguntas.length,
+      totalPreguntas: curso.preguntas.length,
       aprobado: progreso.aprobada,
       minutos: progreso.minutos(),
       respuestas: progreso.respuestas,
@@ -81,9 +93,7 @@ export function ConstanciaPage() {
 
   return (
     <Tarjeta>
-      <Titulo meta="Estos datos quedan como soporte de tu capacitación.">
-        Constancia de capacitación
-      </Titulo>
+      <Titulo meta={`${app.id} · ${app.nombre}`}>Constancia de capacitación</Titulo>
 
       <CampoTexto
         etiqueta="Nombre completo"
@@ -116,10 +126,10 @@ export function ConstanciaPage() {
       {config.exigeFirma && <FirmaPad alFirmar={setFirma} />}
 
       <Casilla marcada={declaracion} alCambiar={setDeclaracion}>
-        Declaro que recibí y entendí la capacitación, y que me comprometo a aplicar lo indicado
-        en ella.
+        Declaro que recibí y entendí la capacitación de <b>{app.nombre}</b>, y que me
+        comprometo a aplicar lo indicado en ella.
       </Casilla>
-      <Casilla marcada={datos} alCambiar={setDatos}>
+      <Casilla marcada={datosOk} alCambiar={setDatosOk}>
         Autorizo el tratamiento de mis datos personales (nombre, cédula y correo) para el registro
         de capacitaciones, conforme a la Ley 1581 de 2012.
       </Casilla>

@@ -58,20 +58,23 @@ export async function leerValores(
 }
 
 /**
- * ¿Ya hay una constancia de esta cédula para este curso?
+ * ¿Ya hay una constancia de esta cédula para esta aplicación?
  * Pasa seguido: se cae la señal, el inspector recarga y vuelve a enviar.
  * Devuelve la fecha del registro previo, o null.
+ *
+ * Se compara contra la aplicación y no contra el código del curso: el mismo
+ * inspector sí debe poder capacitarse en varias apps.
  */
 export async function buscarConstanciaPrevia(
   env: Env,
   cedula: string,
-  cursoCodigo: string,
+  appId: string,
 ): Promise<string | null> {
-  // Solo las columnas que hacen falta: fecha (A), curso (B) y cédula (F).
-  const filas = await leerValores(env, `${HOJA_CONSTANCIAS}!A2:F`);
+  // Hasta la columna P, que es donde quedó app_id.
+  const filas = await leerValores(env, `${HOJA_CONSTANCIAS}!A2:P`);
   for (let i = filas.length - 1; i >= 0; i--) {
     const fila = filas[i];
-    if (fila[5] === cedula && fila[1] === cursoCodigo) {
+    if (fila[5] === cedula && fila[15] === appId) {
       return String(fila[0] || "").slice(0, 10);
     }
   }

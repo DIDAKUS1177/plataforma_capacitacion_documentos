@@ -24,7 +24,10 @@ GMAIL_REMITENTE=""
 EXIGE_FIRMA="false"
 CARPETA_FIRMAS_ID=""
 
-# Listado Maestro para el desplegable de aplicaciones (solo lectura).
-# Vacío = se usa la lista de respaldo del código.
-LISTADO_MAESTRO_ID=""
-LISTADO_MAESTRO_HOJA="Listado Maestro"
+# Listado Maestro de Calidad: de aquí sale el catálogo de aplicaciones, tanto
+# para elegir capacitación como para el buzón. SOLO LECTURA.
+# Si se dejan vacías se usan estos mismos valores por defecto (están en el
+# código); solo hay que tocarlas si el Sheet se mueve.
+# Ojo: el nombre de la hoja termina en espacio.
+LISTADO_MAESTRO_ID="1NH4KKN1_zJ7mqluN5h0TncbiLh6wAiYOU9yNKLiA9uA"
+LISTADO_MAESTRO_HOJA="Listado Maestro "

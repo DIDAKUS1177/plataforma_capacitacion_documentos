@@ -27,11 +27,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const nombre = datos.nombre.trim();
 
   try {
-    const previa = await buscarConstanciaPrevia(env, cedula, datos.cursoCodigo);
+    const previa = await buscarConstanciaPrevia(env, cedula, datos.appId);
     if (previa) {
       return ok(
         { repetida: true },
-        `Ya tenías esta capacitación registrada el ${previa}. No se duplicó el registro.`,
+        `Ya tenías registrada la capacitación de ${datos.appId} el ${previa}. ` +
+          "No se duplicó el registro.",
       );
     }
 
@@ -58,6 +59,11 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       "SÍ", // aceptó la declaración
       "SÍ", // autorizó el tratamiento de datos (Ley 1581)
       linkFirma,
+      // Columnas agregadas después, al final: la capacitación pasó a ser por
+      // aplicación y no una sola general.
+      datos.appId,
+      datos.appNombre,
+      datos.tecnica,
     ]);
 
     // El detalle pregunta por pregunta es lo que dice QUÉ se entendió mal.
@@ -111,6 +117,8 @@ function cuerpoCorreo(
       <p>Hola ${nombre},</p>
       <p>Queda registrada tu capacitación:</p>
       <table style="border-collapse:collapse">
+        ${fila("Aplicación", `${datos.appId} — ${datos.appNombre}`)}
+        ${fila("Técnica", datos.tecnica || "—")}
         ${fila("Curso", `${datos.cursoNombre} (${datos.cursoCodigo})`)}
         ${fila("Versión del material", datos.cursoVersion)}
         ${fila("Fecha", fecha)}

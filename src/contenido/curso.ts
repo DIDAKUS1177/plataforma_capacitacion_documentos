@@ -32,7 +32,12 @@ export interface Curso {
   preguntas: Pregunta[];
 }
 
-export const CURSO: Curso = {
+/**
+ * Tronco común: lo que se le enseña a todo inspector, sin importar la
+ * aplicación. Cada capacitación son estos módulos + los propios de su app
+ * (ver MODULOS_POR_APP más abajo).
+ */
+export const CURSO_BASE: Curso = {
   codigo: "CAP-GEN-01",
   nombre: "Inducción a la plataforma ADEMINCOL",
   version: "1.0",
@@ -169,6 +174,57 @@ export const CURSO: Curso = {
     },
   ],
 };
+
+// ---------------------------------------------------------------------------
+// Contenido propio de cada aplicación
+// ---------------------------------------------------------------------------
+
+/**
+ * Módulos que se agregan al tronco común según la app elegida. La clave es el
+ * ID del Listado Maestro (APP-022, APP-001…).
+ *
+ * Una app sin entrada aquí recibe solo el tronco común — que es lo correcto
+ * mientras no exista material propio de esa técnica.
+ *
+ * Ejemplo de cómo se agrega uno:
+ *
+ *   "APP-022": [
+ *     {
+ *       id: "mt1",
+ *       titulo: "Criterios de aceptación en MT",
+ *       minutos: 6,
+ *       html: `<p>…</p>`,
+ *     },
+ *   ],
+ */
+export const MODULOS_POR_APP: Record<string, Modulo[]> = {};
+
+/** Preguntas que se suman a las del tronco común, por app. */
+export const PREGUNTAS_POR_APP: Record<string, Pregunta[]> = {};
+
+/**
+ * Arma el curso de una aplicación: tronco común + lo suyo.
+ *
+ * El mínimo para aprobar se ajusta a la cantidad de preguntas (80 %,
+ * redondeado hacia arriba) para que agregar preguntas de técnica no vuelva la
+ * evaluación imposible ni trivial.
+ */
+export function construirCurso(appId: string, appNombre: string): Curso {
+  const propios = MODULOS_POR_APP[appId] || [];
+  const preguntasPropias = PREGUNTAS_POR_APP[appId] || [];
+
+  const modulos = [...CURSO_BASE.modulos, ...propios];
+  const preguntas = [...CURSO_BASE.preguntas, ...preguntasPropias];
+
+  return {
+    ...CURSO_BASE,
+    codigo: `${CURSO_BASE.codigo}/${appId}`,
+    nombre: `${CURSO_BASE.nombre} — ${appNombre}`,
+    modulos,
+    preguntas,
+    minimoAprobado: Math.min(preguntas.length, Math.ceil(preguntas.length * 0.8)),
+  };
+}
 
 /** Tipos del buzón de mejoras. */
 export const TIPOS_MEJORA = [

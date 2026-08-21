@@ -28,6 +28,10 @@ export function validarConstancia(
   dominio: string,
   exigeFirma: boolean,
 ): string | null {
+  if (!(d.appId || "").trim()) {
+    return "Falta la aplicación para la que te estás capacitando.";
+  }
+
   const nombre = (d.nombre || "").trim();
   if (nombre.split(/\s+/).filter(Boolean).length < 2) {
     return "Escribe tu nombre completo (nombre y apellido).";

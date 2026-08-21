@@ -24,6 +24,9 @@ HOJAS = {
         "cedula", "correo", "cargo", "puntaje", "total_preguntas", "aprobado",
         "minutos_en_capacitacion", "acepto_declaracion", "autorizo_datos",
         "link_firma",
+        # Agregadas al final (2026-08-21): la capacitación pasó a ser por
+        # aplicación. Nunca reordenar ni renombrar las de arriba.
+        "app_id", "app_nombre", "tecnica",
     ],
     "respuestas_evaluacion": [
         "fecha_hora", "curso_codigo", "cedula", "numero_pregunta", "enunciado",
@@ -35,6 +38,16 @@ HOJAS = {
         "fecha_respuesta", "id_changelog",
     ],
 }
+
+
+def _letra_columna(indice: int) -> str:
+    """0 -> 'A', 25 -> 'Z', 26 -> 'AA'."""
+    letras = ""
+    indice += 1
+    while indice > 0:
+        indice, resto = divmod(indice - 1, 26)
+        letras = chr(65 + resto) + letras
+    return letras
 
 
 def main() -> int:
@@ -85,7 +98,32 @@ def main() -> int:
             .get("values")
         )
         if actual:
-            print(f'"{nombre}": ya tenía encabezados, se deja como está.')
+            existentes = [c.strip() for c in actual[0]]
+            # Solo se completan columnas que FALTEN AL FINAL. Si lo que ya está
+            # no coincide con el principio de lo esperado, no se toca nada: sería
+            # renombrar columnas con datos históricos debajo.
+            if existentes != encabezados[: len(existentes)]:
+                print(
+                    f'"{nombre}": los encabezados actuales no coinciden con los '
+                    f"esperados. NO se tocó nada.\n"
+                    f"    actual:   {existentes}\n"
+                    f"    esperado: {encabezados}"
+                )
+                continue
+
+            faltantes = encabezados[len(existentes):]
+            if not faltantes:
+                print(f'"{nombre}": encabezados al día.')
+                continue
+
+            columna = _letra_columna(len(existentes))
+            svc.spreadsheets().values().update(
+                spreadsheetId=sheet_id,
+                range=f"{nombre}!{columna}1",
+                valueInputOption="RAW",
+                body={"values": [faltantes]},
+            ).execute()
+            print(f'"{nombre}": columnas agregadas al final -> {faltantes}')
             continue
 
         svc.spreadsheets().values().update(

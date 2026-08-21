@@ -201,6 +201,17 @@ export function Casilla({
   );
 }
 
+export function Cargando({ texto = "Cargando…" }: { texto?: string }) {
+  return (
+    <Tarjeta>
+      <p className="flex items-center gap-2 py-4 text-sm text-ink-500 dark:text-ink-400">
+        <Loader2 size={16} className="animate-spin" />
+        {texto}
+      </p>
+    </Tarjeta>
+  );
+}
+
 export function Aviso({ tono, children }: { tono: "ok" | "mal"; children: ReactNode }) {
   const estilo =
     tono === "ok"
