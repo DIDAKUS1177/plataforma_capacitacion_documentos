@@ -96,9 +96,11 @@ cp .dev.vars.example .dev.vars   # y llenar la llave privada
 npm run dev:full
 ```
 
-- `npm run dev` levanta solo el frontend (las llamadas a `/api` fallan con
-  mensaje claro, útil para trabajar el diseño).
-- `npm run dev:full` levanta también las funciones, contra el Sheet real.
+- `npm run dev` — solo el frontend, con recarga en caliente. Las llamadas a
+  `/api` fallan con mensaje claro; sirve para trabajar el diseño.
+- `npm run local` — **el despliegue local de verdad**: compila y levanta el
+  runtime de Cloudflare con las funciones, contra los Sheets reales. Es
+  exactamente lo que va a correr en producción.
 
 ### 3. Cloudflare Pages
 

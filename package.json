@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite",
     "dev:full": "wrangler pages dev -- npm run dev",
+    "local": "npm run build && wrangler pages dev",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler pages deploy dist"
