@@ -1,19 +1,29 @@
 /**
- * Envío de correo con la API de Gmail, usando el mismo service account.
+ * Envío de correo con la API de Gmail. Hay dos vías, y la app soporta las dos
+ * porque cuál sirve depende de si la empresa tiene Google Workspace:
  *
- * Requiere delegación de dominio en Workspace: el service account queda
- * autorizado para enviar como GMAIL_REMITENTE. Se eligió esto en vez de un
- * servicio externo (Resend, SendGrid) para no meter otro proveedor ni otra
- * factura: el correo sale del propio Workspace de la empresa.
+ *  A) Delegación de dominio (solo Workspace). El service account queda
+ *     autorizado por el admin para enviar como GMAIL_REMITENTE. No hay tokens
+ *     que rotar. Si la cuenta es un @gmail.com corriente esto NO funciona:
+ *     Google responde `invalid_grant / Invalid email or User ID`, porque un
+ *     service account solo puede suplantar cuentas de un dominio que administra.
  *
- * Si GMAIL_REMITENTE no está configurado, no se manda nada y no se rompe: el
- * registro en el Sheet ya quedó guardado antes de llegar aquí.
+ *  B) OAuth de usuario (sirve con @gmail.com y con Workspace). El dueño del
+ *     buzón autoriza una vez desde el navegador con `scripts/autorizar_gmail.py`
+ *     y se guarda el refresh token como secreto. La app pide un access token
+ *     con ese refresh token cada vez que lo necesita.
+ *
+ * Si están configuradas las dos, gana la B: es la explícita.
+ *
+ * Si no hay ninguna, no se manda nada y no se rompe: el registro en el Sheet ya
+ * quedó guardado antes de llegar aquí.
  */
 
 import { obtenerToken } from "./google";
 import type { Env } from "./entorno";
 
 const SCOPES_GMAIL = ["https://www.googleapis.com/auth/gmail.send"];
+const OAUTH_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
 export interface Correo {
   para: string;
@@ -36,15 +46,21 @@ export async function enviarCorreo(env: Env, correo: Correo): Promise<boolean> {
   }
 
   try {
-    const token = await obtenerToken(env, SCOPES_GMAIL, remitente);
-    const crudo = armarMime(remitente, correo);
+    const token = await tokenDeGmail(env, remitente);
+    if (!token) {
+      console.warn(
+        `Correo NO enviado a ${correo.para}: no hay forma de autenticarse ` +
+          "(ni refresh token de usuario ni delegación de dominio).",
+      );
+      return false;
+    }
 
     const respuesta = await fetch(
       "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
       {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ raw: crudo }),
+        body: JSON.stringify({ raw: armarMime(remitente, correo) }),
       },
     );
 
@@ -58,6 +74,40 @@ export async function enviarCorreo(env: Env, correo: Correo): Promise<boolean> {
     console.error("No se pudo enviar el correo:", e);
     return false;
   }
+}
+
+/** Access token por la vía B si está configurada; si no, por la vía A. */
+async function tokenDeGmail(env: Env, remitente: string): Promise<string | null> {
+  if (env.GMAIL_REFRESH_TOKEN && env.GMAIL_CLIENT_ID && env.GMAIL_CLIENT_SECRET) {
+    return tokenDesdeRefresh(env);
+  }
+  // Vía A: el JWT lleva `sub` = el buzón a suplantar.
+  return obtenerToken(env, SCOPES_GMAIL, remitente);
+}
+
+/**
+ * Cambia el refresh token por un access token. Los access token duran una hora
+ * y `obtenerToken` no sirve aquí porque esta vía no usa el service account.
+ */
+async function tokenDesdeRefresh(env: Env): Promise<string | null> {
+  const respuesta = await fetch(OAUTH_TOKEN_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: String(env.GMAIL_CLIENT_ID),
+      client_secret: String(env.GMAIL_CLIENT_SECRET),
+      refresh_token: String(env.GMAIL_REFRESH_TOKEN),
+      grant_type: "refresh_token",
+    }),
+  });
+
+  if (!respuesta.ok) {
+    // Pasa si revocaron el permiso desde la cuenta de Google.
+    console.error("El refresh token de Gmail no sirve:", await respuesta.text());
+    return null;
+  }
+  const datos = (await respuesta.json()) as { access_token: string };
+  return datos.access_token;
 }
 
 function armarMime(remitente: string, correo: Correo): string {

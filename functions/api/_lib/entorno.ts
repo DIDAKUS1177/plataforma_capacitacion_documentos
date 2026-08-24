@@ -21,6 +21,14 @@ export interface Env {
    * service account. Vacío = no se manda correo (el registro igual se guarda).
    */
   GMAIL_REMITENTE?: string;
+  /**
+   * Vía B (OAuth de usuario): sirve también con cuentas @gmail.com. Se obtiene
+   * una vez con `scripts/autorizar_gmail.py`. Si están las tres, se usa esta
+   * vía en vez de la delegación de dominio.
+   */
+  GMAIL_REFRESH_TOKEN?: string;
+  GMAIL_CLIENT_ID?: string;
+  GMAIL_CLIENT_SECRET?: string;
   /** Id del Listado Maestro, solo lectura. Vacío = se usa la lista de respaldo. */
   LISTADO_MAESTRO_ID?: string;
   LISTADO_MAESTRO_HOJA?: string;

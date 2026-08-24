@@ -120,19 +120,44 @@ Se manda correo en dos momentos:
 | Al terminar la capacitación | Constancia a quien se capacitó, con copia a calidad |
 | Al radicar en el buzón | Acuse con el número `MEJ-XXXX` a quien reportó (si dejó correo), con copia a calidad. Si no dejó correo, el aviso va solo a calidad |
 
-Los correos salen del **propio Workspace** con la API de Gmail, sin proveedores
-externos ni cuentas nuevas. Hace falta autorizar el service account una sola vez:
+Los correos salen de un buzón de Gmail propio, sin proveedores externos. Hay
+**dos vías** y la app soporta las dos; cuál sirve depende de si la empresa tiene
+Google Workspace.
 
-1. **Admin de Google Workspace → Seguridad → Acceso y control de datos → Controles de API → Delegación de todo el dominio → Añadir nueva.**
+#### Vía A — delegación de dominio (solo con Google Workspace)
+
+El admin autoriza al service account y no hay tokens que rotar.
+
+1. **Admin de Workspace → Seguridad → Acceso y control de datos → Controles de API → Delegación de todo el dominio → Añadir nueva.**
 2. *ID de cliente:* `115739041447549151454`
-   (es el `client_id` del service account `didakus@adcformatos.iam.gserviceaccount.com`).
-3. *Ámbitos de OAuth:* `https://www.googleapis.com/auth/gmail.send`
-4. En las variables de entorno, poner `GMAIL_REMITENTE` con el buzón desde el
-   que sale el correo, ej. `capacitaciones@tudominio.com`.
+3. *Ámbito:* `https://www.googleapis.com/auth/gmail.send`
+4. `GMAIL_REMITENTE` = el buzón desde el que sale, ej. `capacitaciones@tudominio.com`.
 
-**Mientras no esté configurado nada se rompe:** el registro se guarda igual, la
-pantalla dice el número del ticket sin prometer un correo, y en los logs de
-Cloudflare queda `Correo NO enviado …: falta GMAIL_REMITENTE`.
+**No sirve con un `@gmail.com` corriente.** Un service account solo puede
+suplantar cuentas de un dominio que administra; con una cuenta personal Google
+responde `invalid_grant / Invalid email or User ID`.
+
+#### Vía B — OAuth de usuario (sirve con `@gmail.com` y con Workspace)
+
+El dueño del buzón autoriza una vez desde el navegador:
+
+```bash
+pip install google-auth-oauthlib
+python scripts/autorizar_gmail.py ruta/al/drive-oauth-client.json
+```
+
+Deja los valores en `gmail-token.local.json` (ignorado por git). Se copian a las
+variables de entorno: `GMAIL_REMITENTE`, `GMAIL_CLIENT_ID`,
+`GMAIL_CLIENT_SECRET` y `GMAIL_REFRESH_TOKEN` — las dos últimas como **Secret**.
+
+Límite de una cuenta Gmail gratuita: ~500 destinatarios al día. Con Workspace,
+2.000.
+
+Si están configuradas las dos vías gana la B, por ser la explícita.
+
+**Mientras no haya ninguna nada se rompe:** el registro se guarda igual, la
+pantalla no promete un correo que no salió, y en los logs de Cloudflare queda
+`Correo NO enviado …: falta GMAIL_REMITENTE`.
 
 ## Editar el curso
 

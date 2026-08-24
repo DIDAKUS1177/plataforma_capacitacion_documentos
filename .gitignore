@@ -17,3 +17,6 @@ tsconfig.tsbuildinfo
 F-SIG-19*
 *asistencia*.pdf
 *Registro de asistencia*
+
+# Token de Gmail generado por scripts/autorizar_gmail.py
+gmail-token.local.json

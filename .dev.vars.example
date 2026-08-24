@@ -15,10 +15,17 @@ DOMINIO_CORPORATIVO="ademincol.com"
 # Copia oculta de cada constancia. Opcional.
 CORREO_CALIDAD=""
 
-# Buzón de Workspace desde el que salen los correos. Requiere delegación de
-# dominio para el service account (ver README). Vacío = no se manda correo,
-# pero el registro igual se guarda.
+# --- Correo -----------------------------------------------------------------
+# Buzón desde el que salen los correos. Vacío = no se manda nada (el registro
+# igual se guarda).
 GMAIL_REMITENTE=""
+
+# Vía B (OAuth de usuario): sirve con cuentas @gmail.com. Se obtiene una vez con
+#   python scripts/autorizar_gmail.py ruta/al/drive-oauth-client.json
+# Si están las tres, se usa esta vía en vez de la delegación de dominio.
+GMAIL_CLIENT_ID=""
+GMAIL_CLIENT_SECRET=""
+GMAIL_REFRESH_TOKEN=""
 
 # Firma dibujada además de la casilla de aceptación.
 EXIGE_FIRMA="false"
