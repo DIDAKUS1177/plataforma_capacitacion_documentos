@@ -7,7 +7,22 @@ del curso** — esa versión queda escrita en cada constancia.
 | Archivo | Qué es |
 |---|---|
 | `IT-OPE-C-12_instructivo_...pdf` | Instructivo del proceso, rev. 01, aprobado 09-04-2026. Es la fuente formal de los módulos |
-| `presentacion_dominando_la_app_v1.pdf` | La presentación de las sesiones presenciales |
+| `presentacion_dominando_la_app_v1.pdf` | La presentación original (v1). Se conserva como referencia |
+| `presentacion_capacitacion_v2.pptx` | **La presentación vigente**, 16 diapositivas, reconstruida desde el instructivo |
+| `generar_presentacion.js` | El script que produce el `.pptx`. Editarlo y volver a correrlo, no editar el pptx a mano |
+
+## Regenerar la presentación
+
+```bash
+node material/generar_presentacion.js material/presentacion_capacitacion_v2.pptx
+```
+
+Necesita `pptxgenjs` (`npm i -D pptxgenjs`). Editar el script y no el `.pptx`:
+así el diseño queda versionado y el diff se puede leer.
+
+En la última diapositiva hay un espacio marcado
+`[ pega aquí la URL o el código QR de la plataforma ]` — se reemplaza cuando el
+sitio esté publicado.
 
 ## Lo que NO va en esta carpeta
 
