@@ -12,3 +12,8 @@ dist/
 *.log
 .vscode/
 tsconfig.tsbuildinfo
+
+# Registros del SGC con datos personales: nunca al repo (ver material/README.md).
+F-SIG-19*
+*asistencia*.pdf
+*Registro de asistencia*
