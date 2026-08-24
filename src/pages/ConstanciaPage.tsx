@@ -111,12 +111,16 @@ export function ConstanciaPage() {
         marcador="Sin puntos ni comas"
       />
       <CampoTexto
-        etiqueta="Correo corporativo"
+        etiqueta={config.dominio ? "Correo corporativo" : "Correo"}
         tipo="email"
         valor={correo}
         alCambiar={setCorreo}
-        marcador={config.dominio ? `nombre@${config.dominio}` : "nombre@empresa.com"}
-        ayuda="Ahí te llega tu constancia."
+        marcador={config.dominio ? `nombre@${config.dominio}` : "nombre@correo.com"}
+        ayuda={
+          config.dominio
+            ? "Ahí te llega tu constancia."
+            : "El corporativo si tienes; si no, el personal. Ahí te llega tu constancia."
+        }
       />
       <CampoTexto
         etiqueta="Cargo / técnica que ejecutas"

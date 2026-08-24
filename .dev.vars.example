@@ -9,8 +9,11 @@ GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIE...\n-----END PRIVATE KEY--
 
 SHEET_ID="1z0Wcc2-A0S6JCVjm_e3kfcXZgZMgr3g_VpOTMq6X3IU"
 
-# Dominio corporativo exigido en el correo. Vacío = se acepta cualquiera.
-DOMINIO_CORPORATIVO="ademincol.com"
+# Dominio exigido en el correo del inspector. VACÍO = se acepta cualquiera.
+# Está vacío a propósito: el personal está repartido entre correo corporativo
+# y personal, y exigir un dominio dejaría a media plantilla sin poder
+# registrar su constancia. Se puede volver a activar cuando todos migren.
+DOMINIO_CORPORATIVO=""
 
 # Copia oculta de cada constancia. Opcional.
 CORREO_CALIDAD=""

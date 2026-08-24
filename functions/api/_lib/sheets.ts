@@ -6,6 +6,41 @@ import { exigir, type Env } from "./entorno";
 const SCOPES_SHEETS = ["https://www.googleapis.com/auth/spreadsheets"];
 const BASE = "https://sheets.googleapis.com/v4/spreadsheets";
 
+/**
+ * Sheets devuelve 429 (cuota) y 5xx (indisponible) de vez en cuando, sin
+ * ninguna razón del lado nuestro. Visto en desarrollo: un 503 al leer, que
+ * tumbaba el registro de una constancia — después de que el inspector hizo
+ * media hora de curso. Se reintenta con espera creciente.
+ *
+ * Solo se reintenta lo transitorio: un 400 o un 403 son errores nuestros y
+ * repetirlos no arregla nada.
+ */
+const ESPERAS_MS = [400, 1200, 2500];
+
+async function conReintentos(
+  peticion: () => Promise<Response>,
+  queHacia: string,
+): Promise<Response> {
+  let ultima: Response | null = null;
+
+  for (let intento = 0; intento <= ESPERAS_MS.length; intento++) {
+    if (intento > 0) {
+      await new Promise((listo) => setTimeout(listo, ESPERAS_MS[intento - 1]));
+    }
+    const respuesta = await peticion();
+    if (respuesta.ok) return respuesta;
+
+    const transitorio = respuesta.status === 429 || respuesta.status >= 500;
+    if (!transitorio) return respuesta;
+
+    ultima = respuesta;
+    console.warn(
+      `${queHacia}: HTTP ${respuesta.status}, reintento ${intento + 1} de ${ESPERAS_MS.length}`,
+    );
+  }
+  return ultima as Response;
+}
+
 export const HOJA_CONSTANCIAS = "constancias";
 export const HOJA_RESPUESTAS = "respuestas_evaluacion";
 export const HOJA_MEJORAS = "mejoras";
@@ -27,11 +62,15 @@ export async function agregarFilas(env: Env, hoja: string, filas: unknown[][]): 
     `${BASE}/${id}/values/${encodeURIComponent(hoja)}!A1:append` +
     `?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
 
-  const respuesta = await fetch(url, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ values: filas }),
-  });
+  const respuesta = await conReintentos(
+    () =>
+      fetch(url, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ values: filas }),
+      }),
+    `escribir en "${hoja}"`,
+  );
 
   if (!respuesta.ok) {
     throw new Error(`No se pudo escribir en "${hoja}": ${await respuesta.text()}`);
@@ -46,9 +85,13 @@ export async function leerValores(
 ): Promise<string[][]> {
   const id = idAlterno || exigir(env, "SHEET_ID");
   const token = await obtenerToken(env, SCOPES_SHEETS);
-  const respuesta = await fetch(`${BASE}/${id}/values/${encodeURIComponent(rango)}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const respuesta = await conReintentos(
+    () =>
+      fetch(`${BASE}/${id}/values/${encodeURIComponent(rango)}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    `leer "${rango}"`,
+  );
 
   if (!respuesta.ok) {
     throw new Error(`No se pudo leer "${rango}": ${await respuesta.text()}`);
