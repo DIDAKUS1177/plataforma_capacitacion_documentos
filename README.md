@@ -111,18 +111,28 @@ npm run dev:full
    `GOOGLE_PRIVATE_KEY` va marcada como **Secret**, no como texto plano.
 5. Cada `git push` a `main` despliega solo.
 
-### 4. Correo (opcional)
+### 4. Correo — hay que habilitarlo una vez
 
-Los correos salen del propio Workspace con la API de Gmail, sin proveedores
-externos. Hace falta autorizar el service account una vez:
+Se manda correo en dos momentos:
 
-**Admin de Workspace → Seguridad → Control de datos y acceso → Delegación de
-todo el dominio** → agregar el *client ID* del service account con el scope
-`https://www.googleapis.com/auth/gmail.send`. Luego poner en `GMAIL_REMITENTE`
-el buzón desde el que se envía (ej. `capacitaciones@ademincol.com`).
+| Cuándo | A quién |
+|---|---|
+| Al terminar la capacitación | Constancia a quien se capacitó, con copia a calidad |
+| Al radicar en el buzón | Acuse con el número `MEJ-XXXX` a quien reportó (si dejó correo), con copia a calidad. Si no dejó correo, el aviso va solo a calidad |
 
-Sin esto configurado, la constancia **igual se guarda**; solo no se manda el
-correo.
+Los correos salen del **propio Workspace** con la API de Gmail, sin proveedores
+externos ni cuentas nuevas. Hace falta autorizar el service account una sola vez:
+
+1. **Admin de Google Workspace → Seguridad → Acceso y control de datos → Controles de API → Delegación de todo el dominio → Añadir nueva.**
+2. *ID de cliente:* `115739041447549151454`
+   (es el `client_id` del service account `didakus@adcformatos.iam.gserviceaccount.com`).
+3. *Ámbitos de OAuth:* `https://www.googleapis.com/auth/gmail.send`
+4. En las variables de entorno, poner `GMAIL_REMITENTE` con el buzón desde el
+   que sale el correo, ej. `capacitaciones@tudominio.com`.
+
+**Mientras no esté configurado nada se rompe:** el registro se guarda igual, la
+pantalla dice el número del ticket sin prometer un correo, y en los logs de
+Cloudflare queda `Correo NO enviado …: falta GMAIL_REMITENTE`.
 
 ## Editar el curso
 

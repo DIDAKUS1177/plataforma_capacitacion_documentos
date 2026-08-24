@@ -58,5 +58,5 @@ export function registrarConstancia(datos: DatosConstancia) {
 }
 
 export function registrarMejora(datos: DatosMejora) {
-  return enviar<{ id: string }>("/api/mejora", datos);
+  return enviar<{ id: string; correoEnviado: boolean }>("/api/mejora", datos);
 }

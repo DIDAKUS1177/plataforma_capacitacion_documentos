@@ -108,13 +108,18 @@ function cuerpoCorreo(
   cedula: string,
   fecha: string,
 ): string {
+  // El nombre y el cargo los escribe el inspector: sin escapar, un `<` rompe
+  // el HTML del correo.
+  const esc = (t: string) =>
+    String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
   const fila = (k: string, v: string) =>
     `<tr><td style="border:1px solid #e2e8f0;padding:8px"><b>${k}</b></td>` +
-    `<td style="border:1px solid #e2e8f0;padding:8px">${v}</td></tr>`;
+    `<td style="border:1px solid #e2e8f0;padding:8px">${esc(v)}</td></tr>`;
 
   return `
     <div style="font-family:Inter,Arial,sans-serif;color:#1e293b;font-size:14px">
-      <p>Hola ${nombre},</p>
+      <p>Hola ${esc(nombre)},</p>
       <p>Queda registrada tu capacitación:</p>
       <table style="border-collapse:collapse">
         ${fila("Aplicación", `${datos.appId} — ${datos.appNombre}`)}

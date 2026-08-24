@@ -25,7 +25,15 @@ export interface Correo {
 /** Devuelve true si se envió, false si no estaba configurado o falló. */
 export async function enviarCorreo(env: Env, correo: Correo): Promise<boolean> {
   const remitente = env.GMAIL_REMITENTE;
-  if (!remitente) return false;
+  if (!remitente) {
+    // Queda en los logs de Cloudflare: si no, "no llegó el correo" se
+    // investiga a ciegas.
+    console.warn(
+      `Correo NO enviado a ${correo.para}: falta GMAIL_REMITENTE. ` +
+        "El registro sí quedó guardado.",
+    );
+    return false;
+  }
 
   try {
     const token = await obtenerToken(env, SCOPES_GMAIL, remitente);
