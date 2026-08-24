@@ -30,6 +30,8 @@ export interface DatosConstancia {
   cedula: string;
   correo: string;
   cargo: string;
+  /** Área o unidad de negocio. Lo pide el F-SIG-19. */
+  areaUn: string;
   /** Aplicación para la que se capacita. */
   appId: string;
   appNombre: string;

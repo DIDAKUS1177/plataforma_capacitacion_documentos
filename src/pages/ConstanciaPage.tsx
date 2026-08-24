@@ -18,6 +18,7 @@ export function ConstanciaPage() {
   const [cedula, setCedula] = useState("");
   const [correo, setCorreo] = useState("");
   const [cargo, setCargo] = useState("");
+  const [areaUn, setAreaUn] = useState("");
   const [firma, setFirma] = useState("");
   const [declaracion, setDeclaracion] = useState(false);
   const [datosOk, setDatosOk] = useState(false);
@@ -47,6 +48,7 @@ export function ConstanciaPage() {
       cedula,
       correo,
       cargo,
+      areaUn,
       firma,
       appId: app.id,
       appNombre: app.nombre,
@@ -121,6 +123,13 @@ export function ConstanciaPage() {
         valor={cargo}
         alCambiar={setCargo}
         marcador="Ej. Inspector END nivel II — MT, PT"
+      />
+      <CampoTexto
+        etiqueta="Área / unidad de negocio"
+        valor={areaUn}
+        alCambiar={setAreaUn}
+        marcador="Ej. COL"
+        ayuda="Lo pide el formato de asistencia F-SIG-19."
       />
 
       {config.exigeFirma && <FirmaPad alFirmar={setFirma} />}

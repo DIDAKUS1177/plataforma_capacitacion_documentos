@@ -31,3 +31,6 @@ CARPETA_FIRMAS_ID=""
 # Ojo: el nombre de la hoja termina en espacio.
 LISTADO_MAESTRO_ID="1NH4KKN1_zJ7mqluN5h0TncbiLh6wAiYOU9yNKLiA9uA"
 LISTADO_MAESTRO_HOJA="Listado Maestro "
+
+# Quien dicta la capacitacion. Va en la constancia (campo del F-SIG-19).
+EXPOSITOR="Diego Alejandro Hernandez Blanco"

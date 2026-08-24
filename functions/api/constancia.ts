@@ -37,6 +37,10 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
 
     const ahora = new Date();
+    // El F-SIG-19 registra hora de inicio y de fin de la actividad. El fin es
+    // ahora; el inicio se deriva de los minutos que el navegador midió, en vez
+    // de confiar en un reloj de celular que puede estar desajustado.
+    const inicio = new Date(ahora.getTime() - Math.max(0, datos.minutos) * 60_000);
     const linkFirma = await guardarFirma(
       env,
       datos.firma || "",
@@ -64,6 +68,14 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       datos.appId,
       datos.appNombre,
       datos.tecnica,
+      // Campos que pide el F-SIG-19 para que esta fila sea el registro de
+      // asistencia y no un documento paralelo. También al final.
+      datos.areaUn.trim(),
+      "Virtual", // modalidad
+      "Capacitación", // tipo de actividad
+      env.EXPOSITOR || "",
+      fechaBogota(inicio),
+      fechaBogota(ahora),
     ]);
 
     // El detalle pregunta por pregunta es lo que dice QUÉ se entendió mal.
@@ -124,6 +136,7 @@ function cuerpoCorreo(
       <table style="border-collapse:collapse">
         ${fila("Aplicación", `${datos.appId} — ${datos.appNombre}`)}
         ${fila("Técnica", datos.tecnica || "—")}
+        ${fila("Área / unidad", datos.areaUn)}
         ${fila("Curso", `${datos.cursoNombre} (${datos.cursoCodigo})`)}
         ${fila("Versión del material", datos.cursoVersion)}
         ${fila("Fecha", fecha)}

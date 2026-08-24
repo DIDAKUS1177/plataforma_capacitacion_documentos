@@ -27,6 +27,10 @@ HOJAS = {
         # Agregadas al final (2026-08-21): la capacitación pasó a ser por
         # aplicación. Nunca reordenar ni renombrar las de arriba.
         "app_id", "app_nombre", "tecnica",
+        # Agregadas al final (2026-08-24): campos que pide el F-SIG-19 para que
+        # esta hoja sea el registro de asistencia oficial.
+        "area_un", "modalidad", "tipo_actividad", "expositor",
+        "hora_inicio", "hora_fin",
     ],
     "respuestas_evaluacion": [
         "fecha_hora", "curso_codigo", "cedula", "numero_pregunta", "enunciado",

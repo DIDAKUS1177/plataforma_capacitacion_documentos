@@ -53,6 +53,9 @@ export function validarConstancia(
   if (!(d.cargo || "").trim()) {
     return "Falta tu cargo o la técnica que ejecutas.";
   }
+  if (!(d.areaUn || "").trim()) {
+    return "Falta el área o unidad de negocio.";
+  }
   if (!d.aceptaDeclaracion || !d.aceptaDatos) {
     return "Debes aceptar las dos casillas para registrar la constancia.";
   }

@@ -106,6 +106,20 @@ body {
 .dark .prosa .ojo {
   background: color-mix(in srgb, var(--color-brand-800) 25%, transparent);
 }
+/* Cita del numeral del instructivo del que sale el módulo. Va discreta: es
+   trazabilidad para auditoría, no algo que el inspector deba leer. */
+.prosa .fuente {
+  margin-top: 1.25rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--color-ink-200);
+  color: var(--color-ink-400);
+  font-size: 0.8rem;
+}
+.dark .prosa .fuente {
+  border-color: var(--color-ink-700);
+  color: var(--color-ink-500);
+}
+
 .prosa .pendiente {
   background: var(--color-ink-100);
   border: 1px dashed var(--color-ink-300);
