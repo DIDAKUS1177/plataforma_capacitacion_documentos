@@ -1,0 +1,6 @@
+# Cloudflare Pages toma de aquí la fecha de compatibilidad del runtime.
+# Sin ella, wrangler usa la fecha de HOY y el build deja de ser reproducible:
+# el mismo commit se comportaría distinto según el día en que se despliegue.
+name = "adc-capacitacion"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-07-18"
