@@ -2,9 +2,9 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { ProveedorProgreso } from "./lib/progreso";
 import { ProveedorAplicaciones } from "./lib/aplicaciones";
-import { SelectorPage } from "./pages/SelectorPage";
-import { InicioPage } from "./pages/InicioPage";
-import { ModuloPage } from "./pages/ModuloPage";
+import { RegistroPage } from "./pages/RegistroPage";
+import { DiapositivasPage, ManualPage } from "./pages/MaterialPage";
+import { PuntosClavePage } from "./pages/PuntosClavePage";
 import { EvaluacionPage } from "./pages/EvaluacionPage";
 import { ConstanciaPage } from "./pages/ConstanciaPage";
 import { ReportarPage } from "./pages/ReportarPage";
@@ -18,14 +18,15 @@ export default function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/capacitacion" replace />} />
 
-              {/* Pestaña 1 — capacitación */}
-              <Route path="/capacitacion" element={<SelectorPage />} />
-              <Route path="/capacitacion/:appId" element={<InicioPage />} />
-              <Route path="/capacitacion/:appId/modulo/:numero" element={<ModuloPage />} />
-              <Route path="/capacitacion/:appId/evaluacion" element={<EvaluacionPage />} />
-              <Route path="/capacitacion/:appId/constancia" element={<ConstanciaPage />} />
+              {/* Pestana 1 - la capacitacion, en orden */}
+              <Route path="/capacitacion" element={<RegistroPage />} />
+              <Route path="/capacitacion/diapositivas" element={<DiapositivasPage />} />
+              <Route path="/capacitacion/manual" element={<ManualPage />} />
+              <Route path="/capacitacion/puntos-clave" element={<PuntosClavePage />} />
+              <Route path="/capacitacion/evaluacion" element={<EvaluacionPage />} />
+              <Route path="/capacitacion/constancia" element={<ConstanciaPage />} />
 
-              {/* Pestaña 2 — buzón de mejoras */}
+              {/* Pestana 2 - buzon de mejoras */}
               <Route path="/reportar" element={<ReportarPage />} />
 
               <Route path="*" element={<Navigate to="/capacitacion" replace />} />

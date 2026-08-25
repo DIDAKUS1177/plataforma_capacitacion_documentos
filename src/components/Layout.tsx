@@ -5,22 +5,18 @@
  *
  * Dos niveles:
  *   1. Las dos pestañas de siempre: Capacitación · Reportar.
- *   2. Solo cuando ya se eligió aplicación: los módulos de ese curso.
- *
- * El segundo nivel no existe hasta que hay app elegida — antes no hay nada que
- * mostrar y estorbaría en pantalla de celular.
+ *   2. Los pasos del curso, que se van abriendo a medida que se avanza.
  */
 
 import { useEffect, useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { GraduationCap, Lightbulb, Lock, Moon, RefreshCw, Sun } from "lucide-react";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { GraduationCap, Lightbulb, Lock, Moon, Sun } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import logo from "../assets/logo-demincol.png";
 
 export function Layout() {
   const progreso = useProgreso();
   const { pathname } = useLocation();
-  const ir = useNavigate();
   const [oscuro, setOscuro] = useState(
     () => window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
   );
@@ -30,20 +26,43 @@ export function Layout() {
   }, [oscuro]);
 
   // Al cambiar de página se sube el scroll: en celular, si no, se entra al
-  // módulo siguiente a media altura.
+  // paso siguiente a media altura.
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
-  const { curso, app } = progreso;
-  const enCurso = pathname.startsWith("/capacitacion/") && !!curso && !!app;
-  const base = app ? `/capacitacion/${encodeURIComponent(app.id)}` : "";
+  const { registro, vistos, todoVisto, aprobada } = progreso;
+  const enCapacitacion = pathname.startsWith("/capacitacion");
+
+  const pasos = [
+    { a: "/capacitacion", texto: "Registro", fin: true, hecho: !!registro },
+    {
+      a: "/capacitacion/diapositivas",
+      texto: "Presentación",
+      bloqueada: !registro,
+      hecho: vistos.has("diapositivas"),
+    },
+    {
+      a: "/capacitacion/manual",
+      texto: "Instructivo",
+      bloqueada: !registro,
+      hecho: vistos.has("manual"),
+    },
+    {
+      a: "/capacitacion/puntos-clave",
+      texto: "Puntos clave",
+      bloqueada: !registro,
+      hecho: vistos.has("puntos-clave"),
+    },
+    { a: "/capacitacion/evaluacion", texto: "Evaluación", bloqueada: !todoVisto, hecho: aprobada },
+    { a: "/capacitacion/constancia", texto: "Constancia", bloqueada: !aprobada },
+  ];
 
   return (
     <div className="flex min-h-full flex-col">
       {/* Branding, pestañas y barra de progreso van dentro de la MISMA cabecera
-          pegajosa: con `top` fijos en cada bloque, el alto cambiante (la barra
-          aparece y desaparece) los solapaba.
+          pegajosa: con `top` fijos en cada bloque, el alto cambiante los
+          solapaba.
 
           Y la cabecera NO cambia con el tema: el logo es tinta oscura sobre
           fondo transparente, así que sobre un header oscuro desaparecía. De
@@ -57,7 +76,7 @@ export function Layout() {
                 Capacitación de inspectores
               </p>
               <p className="truncate text-xs text-ink-400">
-                {enCurso ? `${app.id} · ${app.nombre}` : "Formación y buzón de mejoras"}
+                {registro ? registro.nombre : "Formación y buzón de mejoras"}
               </p>
             </div>
           </div>
@@ -81,7 +100,7 @@ export function Layout() {
           </div>
         </nav>
 
-        {enCurso && (
+        {enCapacitacion && (
           <div className="h-1 bg-ink-100">
             <div
               className="h-full bg-brand-600 transition-all duration-300"
@@ -91,34 +110,15 @@ export function Layout() {
         )}
       </header>
 
-      {/* Nivel 2 — el curso de la app elegida. No es pegajoso a propósito: en
-          celular, tres barras fijas se comen un cuarto de la pantalla, y
-          mientras se lee un módulo no hace falta. */}
-      {enCurso && (
+      {/* Nivel 2 — los pasos. No es pegajoso a propósito: en celular, tres
+          barras fijas se comen un cuarto de la pantalla. */}
+      {enCapacitacion && (
         <div className="border-b border-ink-200 bg-white dark:border-ink-700 dark:bg-ink-800">
-          <div className="mx-auto max-w-3xl px-3 pt-2">
-            <div className="flex justify-end">
-              <button
-                onClick={() => ir("/capacitacion")}
-                className="flex shrink-0 items-center gap-1 text-xs text-brand-600
-                           hover:underline dark:text-brand-400"
-              >
-                <RefreshCw size={12} /> cambiar de aplicación
-              </button>
-            </div>
-
+          <div className="mx-auto max-w-3xl px-3">
             <div className="-mx-1 flex gap-1 overflow-x-auto [scrollbar-width:none]">
-              <Sub a={base} texto="Inicio" fin />
-              {curso.modulos.map((m, i) => (
-                <Sub
-                  key={m.id}
-                  a={`${base}/modulo/${i + 1}`}
-                  texto={`${i + 1}. ${m.titulo}`}
-                  visto={progreso.vistos.has(m.id)}
-                />
+              {pasos.map((p) => (
+                <Paso key={p.a} {...p} />
               ))}
-              <Sub a={`${base}/evaluacion`} texto="Evaluación" bloqueada={!progreso.todosVistos} />
-              <Sub a={`${base}/constancia`} texto="Constancia" bloqueada={!progreso.aprobada} />
             </div>
           </div>
         </div>
@@ -130,7 +130,6 @@ export function Layout() {
 
       <footer className="px-4 py-6 text-center text-xs text-ink-400 dark:text-ink-500">
         ADEMINCOL S.A.S.
-        {curso && ` · ${curso.codigo} v${curso.version}`}
       </footer>
     </div>
   );
@@ -161,17 +160,17 @@ function PestanaPrincipal({
   );
 }
 
-function Sub({
+function Paso({
   a,
   texto,
   bloqueada,
-  visto,
+  hecho,
   fin,
 }: {
   a: string;
   texto: string;
   bloqueada?: boolean;
-  visto?: boolean;
+  hecho?: boolean;
   fin?: boolean;
 }) {
   if (bloqueada) {
@@ -200,7 +199,7 @@ function Sub({
       }
     >
       {texto}
-      {visto && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+      {hecho && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
     </NavLink>
   );
 }

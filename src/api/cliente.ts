@@ -1,6 +1,12 @@
 /** Llamadas a las funciones del servidor (/api/*). */
 
-import type { Aplicacion, DatosConstancia, DatosMejora, Resultado } from "../../shared/tipos";
+import type {
+  Aplicacion,
+  DatosConstancia,
+  DatosMejora,
+  DatosRegistro,
+  Resultado,
+} from "../../shared/tipos";
 
 export interface ConfigServidor {
   dominio: string;
@@ -51,6 +57,10 @@ export function obtenerConfig(): Promise<ConfigServidor> {
 
 export function obtenerAplicaciones(): Promise<Aplicacion[]> {
   return pedir<Aplicacion[]>("/api/aplicaciones");
+}
+
+export function registrarInicio(datos: DatosRegistro) {
+  return enviar<{ registrado: boolean }>("/api/registro", datos);
 }
 
 export function registrarConstancia(datos: DatosConstancia) {

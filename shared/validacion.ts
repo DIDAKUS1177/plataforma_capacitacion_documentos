@@ -8,7 +8,7 @@
  * la consola del navegador. Por eso ambas la ejecutan.
  */
 
-import type { DatosConstancia, DatosMejora } from "./tipos";
+import type { DatosConstancia, DatosMejora, DatosRegistro } from "./tipos";
 
 /** Quita puntos, espacios y guiones de la cédula. En campo la escriben así. */
 export function normalizarCedula(cedula: string): string {
@@ -20,16 +20,18 @@ export function validarCorreo(correo: string): boolean {
 }
 
 /**
+ * Valida los datos de identidad. La usan el registro inicial y la constancia,
+ * porque son los mismos campos: si vivieran duplicadas se desincronizarían.
+ *
  * Devuelve el primer problema encontrado, o null si todo está bien.
  * `dominio` vacío = se acepta cualquier dominio.
  */
-export function validarConstancia(
-  d: Partial<DatosConstancia>,
+export function validarRegistro(
+  d: Partial<DatosRegistro>,
   dominio: string,
-  exigeFirma: boolean,
 ): string | null {
   if (!(d.appId || "").trim()) {
-    return "Falta la aplicación para la que te estás capacitando.";
+    return "Elige el formato sobre el que te vas a capacitar.";
   }
 
   const nombre = (d.nombre || "").trim();
@@ -56,6 +58,18 @@ export function validarConstancia(
   if (!(d.areaUn || "").trim()) {
     return "Falta el área o unidad de negocio.";
   }
+  return null;
+}
+
+/** La constancia son los mismos datos más las aceptaciones y la evaluación. */
+export function validarConstancia(
+  d: Partial<DatosConstancia>,
+  dominio: string,
+  exigeFirma: boolean,
+): string | null {
+  const problema = validarRegistro(d, dominio);
+  if (problema) return problema;
+
   if (!d.aceptaDeclaracion || !d.aceptaDatos) {
     return "Debes aceptar las dos casillas para registrar la constancia.";
   }

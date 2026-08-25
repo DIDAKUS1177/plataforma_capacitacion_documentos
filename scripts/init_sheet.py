@@ -32,6 +32,13 @@ HOJAS = {
         "area_un", "modalidad", "tipo_actividad", "expositor",
         "hora_inicio", "hora_fin",
     ],
+    # Quien EMPEZO la capacitacion. Se escribe al registrarse, antes de ver
+    # nada, para que quede rastro de los que no terminan.
+    "inicios": [
+        "fecha_hora", "nombre", "cedula", "correo", "cargo", "area_un",
+        "app_id", "app_nombre", "tecnica", "curso_codigo", "curso_version",
+        "dispositivo",
+    ],
     "respuestas_evaluacion": [
         "fecha_hora", "curso_codigo", "cedula", "numero_pregunta", "enunciado",
         "respondio", "correcta",

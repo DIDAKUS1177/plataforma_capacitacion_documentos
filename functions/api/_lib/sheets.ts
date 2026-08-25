@@ -41,6 +41,7 @@ async function conReintentos(
   return ultima as Response;
 }
 
+export const HOJA_INICIOS = "inicios";
 export const HOJA_CONSTANCIAS = "constancias";
 export const HOJA_RESPUESTAS = "respuestas_evaluacion";
 export const HOJA_MEJORAS = "mejoras";

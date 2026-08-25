@@ -38,11 +38,11 @@ export interface Curso {
 }
 
 /**
- * Tronco común: lo que se le enseña a todo inspector, sin importar la
- * aplicación. Cada capacitación son estos módulos + los propios de su app
- * (ver MODULOS_POR_APP más abajo).
+ * El curso es el mismo para todas las aplicaciones: lo que cambia entre ellas
+ * es el formato que se diligencia, no el proceso. Por eso el formato se
+ * pregunta en el registro y no parte el contenido en cursos distintos.
  */
-export const CURSO_BASE: Curso = {
+export const CURSO: Curso = {
   codigo: "CAP-GEN-01",
   nombre: "Proceso de inspección y generación automática de reportes",
   version: "2.0",
@@ -52,11 +52,13 @@ export const CURSO_BASE: Curso = {
     <p>Esta capacitación cubre el proceso completo: desde que te asignan la
     inspección hasta que sale el reporte que se le entrega al cliente. Está
     basada en el instructivo <b>IT-OPE-C-12</b> (rev. 01).</p>
-    <p>Toma unos <b>30 minutos</b>. Al final hay una evaluación corta; cuando la
-    apruebes se habilita tu constancia y queda el registro de asistencia.</p>
-    <div class="ojo"><b>Ojo:</b> tienes que abrir todos los módulos antes de que
-    se habilite la evaluación.</div>`,
+    <p>Toma unos <b>30 minutos</b>: la presentación, el instructivo, un repaso
+    de los puntos clave y una evaluación corta. Al aprobarla queda tu constancia
+    y el registro de asistencia.</p>`,
 
+  // Los "puntos clave": el repaso redactado que va DESPUÉS del material
+  // oficial y antes de la evaluación. El material manda; esto resume lo que se
+  // evalúa.
   modulos: [
     {
       id: "m1",
@@ -420,58 +422,6 @@ export const CURSO_BASE: Curso = {
     },
   ],
 };
-
-// ---------------------------------------------------------------------------
-// Contenido propio de cada aplicación
-// ---------------------------------------------------------------------------
-
-/**
- * Módulos que se agregan al tronco común según la app elegida. La clave es el
- * ID del Listado Maestro (APP-022, APP-001…).
- *
- * Una app sin entrada aquí recibe solo el tronco común — que es lo correcto
- * mientras no exista material propio de esa técnica.
- *
- * Ejemplo de cómo se agrega uno:
- *
- *   "APP-022": [
- *     {
- *       id: "mt1",
- *       titulo: "Criterios de aceptación en MT",
- *       minutos: 6,
- *       html: `<p>…</p>`,
- *     },
- *   ],
- */
-export const MODULOS_POR_APP: Record<string, Modulo[]> = {};
-
-/** Preguntas que se suman a las del tronco común, por app. */
-export const PREGUNTAS_POR_APP: Record<string, Pregunta[]> = {};
-
-/**
- * Arma el curso de una aplicación: tronco común + lo suyo.
- *
- * El mínimo para aprobar mantiene la misma proporción del tronco común (6 de
- * 8 = 75 %), así agregar preguntas de técnica no vuelve la evaluación
- * imposible ni trivial.
- */
-export function construirCurso(appId: string, appNombre: string): Curso {
-  const propios = MODULOS_POR_APP[appId] || [];
-  const preguntasPropias = PREGUNTAS_POR_APP[appId] || [];
-
-  const modulos = [...CURSO_BASE.modulos, ...propios];
-  const preguntas = [...CURSO_BASE.preguntas, ...preguntasPropias];
-  const proporcion = CURSO_BASE.minimoAprobado / CURSO_BASE.preguntas.length;
-
-  return {
-    ...CURSO_BASE,
-    codigo: `${CURSO_BASE.codigo}/${appId}`,
-    nombre: `${CURSO_BASE.nombre} — ${appNombre}`,
-    modulos,
-    preguntas,
-    minimoAprobado: Math.min(preguntas.length, Math.ceil(preguntas.length * proporcion)),
-  };
-}
 
 /** Tipos del buzón de mejoras. */
 export const TIPOS_MEJORA = [

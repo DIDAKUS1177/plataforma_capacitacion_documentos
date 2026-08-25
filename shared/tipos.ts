@@ -25,6 +25,26 @@ export interface Aplicacion {
   estado: string;
 }
 
+/**
+ * Lo que se pide ANTES de empezar. Se guarda de una en la hoja `inicios`: así
+ * queda rastro de quien empezó aunque no llegue al final, que antes era
+ * invisible.
+ */
+export interface DatosRegistro {
+  nombre: string;
+  cedula: string;
+  correo: string;
+  cargo: string;
+  /** Área o unidad de negocio. Lo pide el F-SIG-19. */
+  areaUn: string;
+  /** Formato sobre el que se capacita. Va en el campo "Tema" del F-SIG-19. */
+  appId: string;
+  appNombre: string;
+  tecnica: string;
+  cursoCodigo: string;
+  cursoVersion: string;
+}
+
 export interface DatosConstancia {
   nombre: string;
   cedula: string;

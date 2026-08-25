@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useCursoDeLaApp } from "../lib/useCursoDeLaApp";
+import { CURSO } from "../contenido/curso";
 import { useProgreso } from "../lib/progreso";
-import { Aviso, Boton, Cargando, Tarjeta, Titulo } from "../components/ui";
+import { Aviso, Boton, Tarjeta, Titulo } from "../components/ui";
 import type { RespuestaEvaluacion } from "../../shared/tipos";
 
 export function EvaluacionPage() {
-  const { app, curso, noExiste } = useCursoDeLaApp();
   const progreso = useProgreso();
   const ir = useNavigate();
 
@@ -15,17 +14,12 @@ export function EvaluacionPage() {
   const [aviso, setAviso] = useState<{ tono: "ok" | "mal"; texto: string } | null>(null);
   const [calificada, setCalificada] = useState(false);
 
-  if (noExiste) return <Navigate to="/capacitacion" replace />;
-  if (!app || !curso) return <Cargando texto="Preparando la evaluación…" />;
-
-  const base = `/capacitacion/${encodeURIComponent(app.id)}`;
-  // Nadie debería llegar aquí sin ver los módulos, pero la URL es escribible.
-  if (!progreso.todosVistos) return <Navigate to={base} replace />;
+  if (!progreso.registro) return <Navigate to="/capacitacion" replace />;
+  // Nadie debería llegar aquí sin recorrer el material, pero la URL es escribible.
+  if (!progreso.todoVisto) return <Navigate to="/capacitacion/diapositivas" replace />;
 
   function calificar() {
-    if (!curso) return;
-
-    const sinResponder = curso.preguntas
+    const sinResponder = CURSO.preguntas
       .map((_, i) => i)
       .filter((i) => elegidas[i] === undefined)
       .map((i) => i + 1);
@@ -39,7 +33,7 @@ export function EvaluacionPage() {
     const nuevasFalladas = new Set<number>();
     let puntaje = 0;
 
-    curso.preguntas.forEach((p, i) => {
+    CURSO.preguntas.forEach((p, i) => {
       const indice = elegidas[i];
       const acerto = indice === p.correcta;
       if (acerto) puntaje++;
@@ -55,19 +49,19 @@ export function EvaluacionPage() {
     setFalladas(nuevasFalladas);
     progreso.registrarEvaluacion(puntaje, respuestas);
 
-    if (puntaje >= curso.minimoAprobado) {
+    if (puntaje >= CURSO.minimoAprobado) {
       setCalificada(true);
       setAviso({
         tono: "ok",
-        texto: `Aprobaste con ${puntaje} de ${curso.preguntas.length}. Ya puedes registrar tu constancia.`,
+        texto: `Aprobaste con ${puntaje} de ${CURSO.preguntas.length}. Ya puedes registrar tu constancia.`,
       });
-      setTimeout(() => ir(`${base}/constancia`), 1200);
+      setTimeout(() => ir("/capacitacion/constancia"), 1200);
     } else {
       setAviso({
         tono: "mal",
         texto:
-          `Obtuviste ${puntaje} de ${curso.preguntas.length} y necesitas ${curso.minimoAprobado}. ` +
-          "Revisa las preguntas marcadas, vuelve al módulo correspondiente e inténtalo de nuevo.",
+          `Obtuviste ${puntaje} de ${CURSO.preguntas.length} y necesitas ${CURSO.minimoAprobado}. ` +
+          "Revisa las preguntas marcadas, vuelve a los puntos clave e inténtalo de nuevo.",
       });
     }
   }
@@ -84,13 +78,13 @@ export function EvaluacionPage() {
   return (
     <Tarjeta>
       <Titulo
-        meta={`${curso.preguntas.length} preguntas · se aprueba con ${curso.minimoAprobado} correctas · se puede repetir`}
+        meta={`${CURSO.preguntas.length} preguntas · se aprueba con ${CURSO.minimoAprobado} correctas · se puede repetir`}
       >
-        Evaluación — {app.id}
+        Evaluación
       </Titulo>
 
       <div className="divide-y divide-ink-200 dark:divide-ink-700">
-        {curso.preguntas.map((p, i) => (
+        {CURSO.preguntas.map((p, i) => (
           <div
             key={i}
             className={
@@ -129,9 +123,14 @@ export function EvaluacionPage() {
           Calificar
         </Boton>
         {reprobada && (
-          <Boton variante="secundaria" onClick={reintentar}>
-            Volver a intentar
-          </Boton>
+          <>
+            <Boton variante="secundaria" onClick={reintentar}>
+              Volver a intentar
+            </Boton>
+            <Boton variante="secundaria" onClick={() => ir("/capacitacion/puntos-clave")}>
+              Repasar
+            </Boton>
+          </>
         )}
       </div>
     </Tarjeta>
