@@ -111,6 +111,10 @@ async function tokenDesdeRefresh(env: Env): Promise<string | null> {
 }
 
 function armarMime(remitente: string, correo: Correo): string {
+  // Las cabeceras se filtran aparte del cuerpo. Antes iban todas en un arreglo
+  // con un `.filter(Boolean)` para quitar el Cc vacío, y ese filtro se comía
+  // también la LÍNEA EN BLANCO que separa cabeceras de cuerpo. Sin ella el
+  // cuerpo se lee como una cabecera más y el correo llega solo con el asunto.
   const lineas = [
     `From: ADEMINCOL <${remitente}>`,
     `To: ${correo.para}`,
@@ -119,11 +123,19 @@ function armarMime(remitente: string, correo: Correo): string {
     "MIME-Version: 1.0",
     'Content-Type: text/html; charset="UTF-8"',
     "Content-Transfer-Encoding: base64",
-    "",
-    base64DesdeTexto(correo.html),
   ].filter(Boolean);
 
-  return base64url(lineas.join("\r\n"));
+  // El cuerpo en base64 va partido en líneas de 76 caracteres: es lo que exige
+  // el RFC 2045 y hay clientes que descartan un cuerpo que se pase de ahí.
+  const cuerpo = partirEnLineas(base64DesdeTexto(correo.html), 76);
+
+  return base64url(lineas.join("\r\n") + "\r\n\r\n" + cuerpo);
+}
+
+function partirEnLineas(texto: string, largo: number): string {
+  const trozos: string[] = [];
+  for (let i = 0; i < texto.length; i += largo) trozos.push(texto.slice(i, i + largo));
+  return trozos.join("\r\n");
 }
 
 /** Los asuntos con tildes o ñ tienen que ir codificados o llegan rotos. */
