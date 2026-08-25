@@ -14,6 +14,17 @@ import {
 } from "./_lib/sheets";
 import { fallaServidor, fechaBogota, fechaLegible, leerJson, malaPeticion, ok } from "./_lib/http";
 
+/**
+ * Identificador de la constancia, el que lleva el QR.
+ *
+ * Aleatorio y no consecutivo a propósito: la página de verificación es pública
+ * y con ids seguidos cualquiera podría recorrerla sacando nombres y cédulas.
+ * 16 hex = 64 bits, imposible de adivinar a tanteo.
+ */
+function nuevoId(): string {
+  return crypto.randomUUID().replace(/-/g, "").slice(0, 16);
+}
+
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   const datos = await leerJson<DatosConstancia>(request);
   if (!datos) return malaPeticion("No llegó información. Intenta otra vez.");
@@ -36,6 +47,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       );
     }
 
+    const idConstancia = nuevoId();
     const ahora = new Date();
     // El F-SIG-19 registra hora de inicio y de fin de la actividad. El fin es
     // ahora; el inicio se deriva de los minutos que el navegador midió, en vez
@@ -76,6 +88,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       env.EXPOSITOR || "",
       fechaBogota(inicio),
       fechaBogota(ahora),
+      idConstancia,
     ]);
 
     // El detalle pregunta por pregunta es lo que dice QUÉ se entendió mal.
@@ -100,11 +113,17 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       para: correo,
       cc: env.CORREO_CALIDAD || undefined,
       asunto: `Constancia de capacitación — ${datos.cursoNombre}`,
-      html: cuerpoCorreo(datos, nombre, cedula, fechaLegible(ahora)),
+      html: cuerpoCorreo(
+        datos,
+        nombre,
+        cedula,
+        fechaLegible(ahora),
+        enlaceVerificacion(request, idConstancia),
+      ),
     });
 
     return ok(
-      { repetida: false, correoEnviado: enviado },
+      { repetida: false, correoEnviado: enviado, id: idConstancia },
       enviado
         ? `Registro guardado. Te enviamos la constancia a ${correo}.`
         : "Registro guardado.",
@@ -114,11 +133,17 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   }
 };
 
+/** URL pública de verificación, armada desde el propio dominio que atendió. */
+function enlaceVerificacion(peticion: Request, id: string): string {
+  return `${new URL(peticion.url).origin}/verificar/${id}`;
+}
+
 function cuerpoCorreo(
   datos: DatosConstancia,
   nombre: string,
   cedula: string,
   fecha: string,
+  enlace: string,
 ): string {
   // El nombre y el cargo los escribe el inspector: sin escapar, un `<` rompe
   // el HTML del correo.
@@ -146,6 +171,10 @@ function cuerpoCorreo(
       <p style="color:#64748b;font-size:13px">
         Declaraste haber recibido y entendido la capacitación.
         Conserva este correo como soporte.
+      </p>
+      <p style="font-size:13px">
+        Para verificarla, o para mostrarla desde el celular:<br>
+        <a href="${enlace}" style="color:#dc2626">${enlace}</a>
       </p>
       <p style="color:#64748b;font-size:13px">ADEMINCOL S.A.S.</p>
     </div>`;

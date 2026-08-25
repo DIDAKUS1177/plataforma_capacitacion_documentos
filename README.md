@@ -56,6 +56,7 @@ Inspector (celular)
 | `GET /api/aplicaciones` | Catálogo de apps del Listado Maestro de Calidad (solo lectura, caché 6 h) |
 | `POST /api/constancia` | Valida, evita duplicados, escribe y manda el correo |
 | `POST /api/mejora` | Radica la falla o la sugerencia y devuelve el número |
+| `GET /api/verificar` | Comprueba una constancia por su código. Público, datos mínimos |
 
 ## Estructura
 
@@ -85,6 +86,21 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 | `/capacitacion/evaluacion` | Se abre al recorrer todo el material |
 | `/capacitacion/constancia` | Se abre al aprobar |
 | `/reportar?app=APP-022` | Buzón, con la app precargada |
+| `/verificar/<id>` | Lo que abre el QR. Público y fuera del curso |
+
+### El QR de la constancia
+
+Al registrar la constancia se genera un `id_constancia` **aleatorio de 64 bits**
+y se guarda al final de la hoja. El QR aparece en la pantalla de "Listo" y
+apunta a `/verificar/<id>`; el correo lleva el mismo enlace en texto —
+**dentro del correo no va el QR como imagen** porque Gmail bloquea las
+imágenes en `data:` URI y no se vería.
+
+La página de verificación es pública, así que devuelve lo mínimo: nombre,
+curso, formato, fecha y resultado, con la **cédula enmascarada** (`****6432`).
+Ni correo, ni cargo, ni las respuestas. Y el id es aleatorio y no consecutivo:
+con ids seguidos cualquiera podría recorrer la página sacando nombres y
+cédulas.
 
 ### Actualizar el material
 

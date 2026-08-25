@@ -8,6 +8,21 @@ import type {
   Resultado,
 } from "../../shared/tipos";
 
+/** Lo que devuelve la verificación pública. Datos mínimos a propósito. */
+export interface Verificacion {
+  nombre: string;
+  /** Enmascarada: ****6432 */
+  cedula: string;
+  curso: string;
+  cursoCodigo: string;
+  cursoVersion: string;
+  formato: string;
+  tecnica: string;
+  fecha: string;
+  resultado: string;
+  aprobado: boolean;
+}
+
 export interface ConfigServidor {
   dominio: string;
   exigeFirma: boolean;
@@ -64,7 +79,14 @@ export function registrarInicio(datos: DatosRegistro) {
 }
 
 export function registrarConstancia(datos: DatosConstancia) {
-  return enviar<{ repetida: boolean; correoEnviado: boolean }>("/api/constancia", datos);
+  return enviar<{ repetida: boolean; correoEnviado: boolean; id: string }>(
+    "/api/constancia",
+    datos,
+  );
+}
+
+export function verificarConstancia(id: string): Promise<Verificacion> {
+  return pedir<Verificacion>(`/api/verificar?id=${encodeURIComponent(id)}`);
 }
 
 export function registrarMejora(datos: DatosMejora) {

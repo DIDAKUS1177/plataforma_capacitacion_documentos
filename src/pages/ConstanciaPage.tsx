@@ -7,6 +7,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { CURSO } from "../contenido/curso";
 import { useProgreso } from "../lib/progreso";
 import { obtenerConfig, registrarConstancia, ErrorApi, type ConfigServidor } from "../api/cliente";
@@ -27,6 +28,7 @@ export function ConstanciaPage() {
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
   const [exito, setExito] = useState("");
+  const [idConstancia, setIdConstancia] = useState("");
 
   useEffect(() => {
     obtenerConfig()
@@ -63,6 +65,7 @@ export function ConstanciaPage() {
     setEnviando(true);
     try {
       const respuesta = await registrarConstancia(payload);
+      setIdConstancia(respuesta.datos?.id || "");
       setExito(respuesta.mensaje || "Registro guardado.");
     } catch (e) {
       setError(e instanceof ErrorApi ? e.message : "No se pudo registrar. Intenta otra vez.");
@@ -72,11 +75,43 @@ export function ConstanciaPage() {
   }
 
   if (exito) {
+    const enlace = idConstancia ? `${window.location.origin}/verificar/${idConstancia}` : "";
     return (
       <Tarjeta className="text-center">
         <CheckCircle2 size={44} className="mx-auto text-emerald-600" />
         <h2 className="mt-3 text-xl font-semibold text-ink-900 dark:text-ink-50">Listo</h2>
         <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">{exito}</p>
+
+        {enlace && (
+          <>
+            <p className="mt-6 text-sm font-semibold text-ink-700 dark:text-ink-200">
+              Tu constancia
+            </p>
+            <p className="mx-auto mt-1 max-w-xs text-xs text-ink-500 dark:text-ink-400">
+              Escanea o guarda este código: con él se comprueba que la capacitación
+              es real, sin tener que buscarla en ninguna parte.
+            </p>
+
+            {/* El QR va sobre blanco siempre: en modo oscuro, un QR claro sobre
+                fondo oscuro no lo lee ningún celular. */}
+            <div className="mx-auto mt-4 w-fit rounded-xl bg-white p-4 shadow-sm">
+              <QRCodeSVG value={enlace} size={168} level="M" />
+            </div>
+
+            <a
+              href={enlace}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-block break-all text-xs text-brand-600 hover:underline
+                         dark:text-brand-400"
+            >
+              {enlace}
+            </a>
+            <p className="mt-3 text-xs text-ink-400 dark:text-ink-500">
+              También te llegó por correo.
+            </p>
+          </>
+        )}
       </Tarjeta>
     );
   }

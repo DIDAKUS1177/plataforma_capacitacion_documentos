@@ -8,6 +8,7 @@ import { PuntosClavePage } from "./pages/PuntosClavePage";
 import { EvaluacionPage } from "./pages/EvaluacionPage";
 import { ConstanciaPage } from "./pages/ConstanciaPage";
 import { ReportarPage } from "./pages/ReportarPage";
+import { VerificarPage } from "./pages/VerificarPage";
 
 export default function App() {
   return (
@@ -15,6 +16,10 @@ export default function App() {
       <ProveedorProgreso>
         <BrowserRouter>
           <Routes>
+            {/* Fuera del Layout: la abre gente de fuera que no esta haciendo
+                la capacitacion, y las pestanas del curso solo estorbarian. */}
+            <Route path="/verificar/:id" element={<VerificarPage />} />
+
             <Route element={<Layout />}>
               <Route path="/" element={<Navigate to="/capacitacion" replace />} />
 

@@ -31,6 +31,11 @@ HOJAS = {
         # esta hoja sea el registro de asistencia oficial.
         "area_un", "modalidad", "tipo_actividad", "expositor",
         "hora_inicio", "hora_fin",
+        # Agregada al final (2026-08-25): identificador aleatorio de la
+        # constancia, el que lleva el QR de verificacion. Aleatorio y no
+        # consecutivo a proposito: con ids seguidos cualquiera podria recorrer
+        # la pagina publica y sacar nombres y cedulas.
+        "id_constancia",
     ],
     # Quien EMPEZO la capacitacion. Se escribe al registrarse, antes de ver
     # nada, para que quede rastro de los que no terminan.
