@@ -23,8 +23,13 @@ advertir que la app no está verificada: es esperable, es tu propia app.
 
 import io
 import json
+import os
 import sys
 from pathlib import Path
+
+# Google suele devolver los permisos en otro orden del que se piden, y oauthlib
+# lo trata como error ("Scope has changed"). Esto lo vuelve una advertencia.
+os.environ.setdefault("OAUTHLIB_RELAX_TOKEN_SCOPE", "1")
 
 try:
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -33,7 +38,14 @@ except ImportError:
     print("    pip install google-auth-oauthlib")
     raise SystemExit(1)
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
+# Se piden también los de identidad para poder leer de qué cuenta se trata y
+# llenar GMAIL_REMITENTE solo: escribirlo a mano es un paso más y una fuente de
+# erratas. No dan acceso al buzón, solo al correo de la cuenta.
+SCOPES = [
+    "openid",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/gmail.send",
+]
 RAIZ = Path(__file__).resolve().parent.parent
 DESTINO = RAIZ / "gmail-token.local.json"
 
@@ -61,6 +73,25 @@ def _buscar_cliente() -> str:
     print("Pásalo como argumento:")
     print("   python scripts/autorizar_gmail.py ruta/al/drive-oauth-client.json")
     raise SystemExit(1)
+
+
+def _correo_de(cred) -> str:
+    """
+    Saca el correo del id_token que devuelve Google. Es un JWT y solo se lee su
+    carga útil: no hace falta verificarlo porque viene directo de Google por
+    TLS, y solo se usa para rellenar un campo.
+    """
+    import base64
+
+    bruto = getattr(cred, "id_token", None)
+    if not bruto:
+        return ""
+    try:
+        carga = bruto.split(".")[1]
+        carga += "=" * (-len(carga) % 4)  # base64url sin relleno
+        return json.loads(base64.urlsafe_b64decode(carga)).get("email", "")
+    except Exception:  # noqa: BLE001 - si no se puede, se pide a mano
+        return ""
 
 
 def main() -> int:
@@ -100,8 +131,10 @@ def main() -> int:
         print("https://myaccount.google.com/permissions y vuelve a correr esto.")
         return 1
 
+    correo = _correo_de(cred) or "(escribe aquí el correo de la cuenta)"
+
     datos = {
-        "GMAIL_REMITENTE": "(el correo de la cuenta con la que acabas de entrar)",
+        "GMAIL_REMITENTE": correo,
         "GMAIL_CLIENT_ID": cred.client_id,
         "GMAIL_CLIENT_SECRET": cred.client_secret,
         "GMAIL_REFRESH_TOKEN": cred.refresh_token,
@@ -109,14 +142,15 @@ def main() -> int:
     io.open(DESTINO, "w", encoding="utf-8").write(json.dumps(datos, indent=2))
 
     print("")
+    print("Autorizado como: " + correo)
+    print("")
     print("Listo. Los valores quedaron en:")
     print("   " + str(DESTINO))
     print("")
     print("Qué hacer con ellos:")
-    print("  1. Escribe tu correo en GMAIL_REMITENTE dentro de ese archivo.")
-    print("  2. Cópialos a las variables de entorno de Cloudflare Pages.")
+    print("  1. Cópialos a las variables de entorno de Cloudflare Pages.")
     print("     CLIENT_SECRET y REFRESH_TOKEN van marcados como Secret.")
-    print("  3. Para probar en local, cópialos también a .dev.vars.")
+    print("  2. Para probar en local, cópialos también a .dev.vars.")
     print("")
     print("Ese archivo está en .gitignore. No lo subas ni lo mandes por chat.")
     return 0
