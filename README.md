@@ -178,8 +178,15 @@ Deja los valores en `gmail-token.local.json` (ignorado por git). Se copian a las
 variables de entorno: `GMAIL_REMITENTE`, `GMAIL_CLIENT_ID`,
 `GMAIL_CLIENT_SECRET` y `GMAIL_REFRESH_TOKEN` — las dos últimas como **Secret**.
 
+**La API de Gmail tiene que estar habilitada en el proyecto de Google Cloud**
+(APIs y servicios → Biblioteca → Gmail API → Habilitar). Si no lo está, Google
+responde `PERMISSION_DENIED: Gmail API has not been used in project … or it is
+disabled`, aunque el token sea válido.
+
 Límite de una cuenta Gmail gratuita: ~500 destinatarios al día. Con Workspace,
 2.000.
+
+Configurado el 2026-08-25: los correos salen de `desarrolloademincol@gmail.com`.
 
 Si están configuradas las dos vías gana la B, por ser la explícita.
 
