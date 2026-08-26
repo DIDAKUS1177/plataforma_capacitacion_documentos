@@ -137,3 +137,60 @@ export async function siguienteIdMejora(env: Env): Promise<string> {
   const filas = await leerValores(env, `${HOJA_MEJORAS}!A2:A`);
   return "MEJ-" + String(filas.length + 1).padStart(4, "0");
 }
+
+/**
+ * Posiciones de la hoja `mejoras`. Se declaran aquí y no en cada endpoint para
+ * que al agregar una columna haya un solo sitio que corregir. Ver
+ * scripts/init_sheet.py.
+ */
+export const COL_MEJORA = {
+  id: 0,
+  fecha: 1,
+  aplicacion: 2,
+  tipo: 3,
+  criticidad: 4,
+  descripcion: 5,
+  nombre: 6,
+  correo: 7,
+  estado: 8,
+  responsable: 9,
+  respuesta: 10,
+  fechaRespuesta: 11,
+  idChangelog: 12,
+  notificadoEn: 13, // columna N
+};
+
+/**
+ * Escribe celdas sueltas en una sola llamada.
+ *
+ * `celdas` va como { "mejoras!N5": "2026-08-26 10:00:00", ... }. Se usa para
+ * marcar avisos enviados sin reescribir la fila entera: el supervisor puede
+ * estar editando otras columnas al mismo tiempo.
+ */
+export async function escribirCeldas(
+  env: Env,
+  celdas: Record<string, string>,
+): Promise<void> {
+  const rangos = Object.keys(celdas);
+  if (!rangos.length) return;
+
+  const id = exigir(env, "SHEET_ID");
+  const token = await obtenerToken(env, SCOPES_SHEETS);
+
+  const respuesta = await conReintentos(
+    () =>
+      fetch(`${BASE}/${id}/values:batchUpdate`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          valueInputOption: "RAW",
+          data: rangos.map((rango) => ({ range: rango, values: [[celdas[rango]]] })),
+        }),
+      }),
+    `escribir ${rangos.length} celda(s)`,
+  );
+
+  if (!respuesta.ok) {
+    throw new Error(`No se pudieron escribir las celdas: ${await respuesta.text()}`);
+  }
+}

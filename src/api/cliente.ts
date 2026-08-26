@@ -23,6 +23,21 @@ export interface Verificacion {
   aprobado: boolean;
 }
 
+/** Estado de un reporte del buzón, para quien lo levantó. */
+export interface EstadoReporte {
+  id: string;
+  fecha: string;
+  aplicacion: string;
+  tipo: string;
+  criticidad: string;
+  descripcion: string;
+  estado: string;
+  responsable: string;
+  respuesta: string;
+  fechaRespuesta: string;
+  respondido: boolean;
+}
+
 export interface ConfigServidor {
   dominio: string;
   exigeFirma: boolean;
@@ -83,6 +98,11 @@ export function registrarConstancia(datos: DatosConstancia) {
     "/api/constancia",
     datos,
   );
+}
+
+export async function consultarReporte(id: string, correo: string): Promise<EstadoReporte> {
+  const r = await enviar<EstadoReporte>("/api/consulta", { id, correo });
+  return r.datos as EstadoReporte;
 }
 
 export function verificarConstancia(id: string): Promise<Verificacion> {

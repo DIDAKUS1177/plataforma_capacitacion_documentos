@@ -37,7 +37,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
 
     // El acuse va después de escribir: si el correo falla, el reporte ya está
     // guardado y no se pierde nada.
-    const correoEnviado = await avisar(env, id, datos, correo);
+    const enlaceConsulta = `${new URL(request.url).origin}/mi-reporte?id=${id}`;
+    const correoEnviado = await avisar(env, id, datos, correo, enlaceConsulta);
 
     return ok(
       { id, correoEnviado },
@@ -65,6 +66,7 @@ async function avisar(
   id: string,
   datos: DatosMejora,
   correo: string,
+  enlaceConsulta: string,
 ): Promise<boolean> {
   const calidad = (env.CORREO_CALIDAD || "").trim();
 
@@ -83,7 +85,7 @@ async function avisar(
     para: correo,
     cc: calidad || undefined,
     asunto: `Recibimos tu reporte ${id} — ADEMINCOL`,
-    html: cuerpoParaQuienReporta(id, datos),
+    html: cuerpoParaQuienReporta(id, datos, enlaceConsulta),
   });
 }
 
@@ -93,7 +95,7 @@ function fila(k: string, v: string): string {
   return `<tr><td ${CELDA}><b>${escapar(k)}</b></td><td ${CELDA}>${escapar(v)}</td></tr>`;
 }
 
-function cuerpoParaQuienReporta(id: string, datos: DatosMejora): string {
+function cuerpoParaQuienReporta(id: string, datos: DatosMejora, enlace: string): string {
   const nombre = (datos.nombre || "").trim();
   return `
     <div style="font-family:Inter,Arial,sans-serif;color:#1e293b;font-size:14px">
@@ -111,8 +113,12 @@ function cuerpoParaQuienReporta(id: string, datos: DatosMejora): string {
                 white-space:pre-wrap">${escapar(datos.descripcion)}</p>
       <p><b>Qué sigue:</b> lo revisa el área de calidad. Si se acepta, verás el
       cambio en la aplicación y te avisamos citando este número.</p>
-      <p style="font-size:13px;color:#64748b">Guarda este correo: con el número
-      ${id} puedes preguntar en qué quedó.</p>
+      <p style="font-size:13px">Puedes consultar en qué va cuando quieras:<br>
+      <a href="${enlace}" style="color:#dc2626">${enlace}</a><br>
+      <span style="color:#64748b">Te pedirá este correo para confirmar que eres
+      tú.</span></p>
+      <p style="font-size:13px;color:#64748b">Y cuando lo revisemos te llega otro
+      correo con la respuesta: no tienes que estar entrando a mirar.</p>
       <p style="font-size:13px;color:#64748b">ADEMINCOL S.A.S.</p>
     </div>`;
 }

@@ -4,13 +4,13 @@
  * pestañas subrayadas en brand-600 cuando están activas.
  *
  * Dos niveles:
- *   1. Las dos pestañas de siempre: Capacitación · Reportar.
+ *   1. Las tres pestañas de siempre: Capacitación · Reportar · Mi reporte.
  *   2. Los pasos del curso, que se van abriendo a medida que se avanza.
  */
 
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { GraduationCap, Lightbulb, Lock, Moon, Sun } from "lucide-react";
+import { GraduationCap, Lightbulb, Lock, Moon, Search, Sun } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import logo from "../assets/logo-demincol.png";
 
@@ -97,6 +97,7 @@ export function Layout() {
           <div className="mx-auto flex max-w-3xl px-2">
             <PestanaPrincipal a="/capacitacion" icono={GraduationCap} texto="Capacitación" />
             <PestanaPrincipal a="/reportar" icono={Lightbulb} texto="Reportar" />
+            <PestanaPrincipal a="/mi-reporte" icono={Search} texto="Mi reporte" />
           </div>
         </nav>
 

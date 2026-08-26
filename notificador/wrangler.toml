@@ -1,0 +1,13 @@
+# Worker diminuto cuyo único trabajo es despertar cada 15 minutos y tocarle el
+# timbre a la plataforma para que mande los correos de las respuestas nuevas.
+#
+# Existe aparte porque Cloudflare Pages NO soporta tareas programadas: los
+# disparos por tiempo solo los tienen los Workers. Toda la lógica —leer el
+# Sheet, armar el correo, marcar la fila— vive en /api/notificar de la
+# plataforma; aquí no hay ninguna credencial de Google.
+name = "adc-notificador"
+main = "src/index.ts"
+compatibility_date = "2025-07-18"
+
+[triggers]
+crons = ["*/15 * * * *"]

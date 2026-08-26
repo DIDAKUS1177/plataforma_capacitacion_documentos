@@ -34,6 +34,11 @@ export interface Env {
   LISTADO_MAESTRO_HOJA?: string;
   /** Quien dicta la capacitación. Va en la constancia (campo del F-SIG-19). */
   EXPOSITOR?: string;
+  /**
+   * Protege POST /api/notificar. Sin ella el endpoint no funciona: cualquiera
+   * podría dispararlo y gastar la cuota de envío de correo.
+   */
+  CLAVE_NOTIFICACIONES?: string;
   /** "true" para exigir firma dibujada además de la casilla de aceptación. */
   EXIGE_FIRMA?: string;
   /** Carpeta de Drive donde se guardan las firmas. Vacío = no se guardan. */

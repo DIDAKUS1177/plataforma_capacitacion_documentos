@@ -8,6 +8,7 @@ import { PuntosClavePage } from "./pages/PuntosClavePage";
 import { EvaluacionPage } from "./pages/EvaluacionPage";
 import { ConstanciaPage } from "./pages/ConstanciaPage";
 import { ReportarPage } from "./pages/ReportarPage";
+import { ConsultaPage } from "./pages/ConsultaPage";
 import { VerificarPage } from "./pages/VerificarPage";
 
 export default function App() {
@@ -33,6 +34,9 @@ export default function App() {
 
               {/* Pestana 2 - buzon de mejoras */}
               <Route path="/reportar" element={<ReportarPage />} />
+
+              {/* Pestana 3 - consultar en que quedo lo reportado */}
+              <Route path="/mi-reporte" element={<ConsultaPage />} />
 
               <Route path="*" element={<Navigate to="/capacitacion" replace />} />
             </Route>

@@ -57,6 +57,8 @@ Inspector (celular)
 | `POST /api/constancia` | Valida, evita duplicados, escribe y manda el correo |
 | `POST /api/mejora` | Radica la falla o la sugerencia y devuelve el número |
 | `GET /api/verificar` | Comprueba una constancia por su código. Público, datos mínimos |
+| `POST /api/consulta` | Estado de un reporte del buzón. Pide número **y** correo |
+| `POST /api/notificar` | Manda los correos de las respuestas nuevas. Protegido con clave |
 
 ## Estructura
 
@@ -86,7 +88,34 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 | `/capacitacion/evaluacion` | Se abre al recorrer todo el material |
 | `/capacitacion/constancia` | Se abre al aprobar |
 | `/reportar?app=APP-022` | Buzón, con la app precargada |
+| `/mi-reporte?id=MEJ-0007` | Consultar en qué quedó lo reportado |
 | `/verificar/<id>` | Lo que abre el QR. Público y fuera del curso |
+
+### El ciclo del buzón
+
+1. El inspector reporta y recibe un acuse con su número y el enlace de consulta.
+2. **Tú escribes en el Sheet**: `estado`, `responsable`, `respuesta`,
+   `fecha_respuesta`.
+3. Cada 15 minutos, el Worker `notificador/` le toca el timbre a
+   `POST /api/notificar`, que manda el correo de las filas con `respuesta`
+   escrita y `notificado_en` vacía, y luego las marca.
+4. El inspector también puede consultar cuando quiera en **Mi reporte**, con su
+   número y su correo.
+
+**Por qué un Worker aparte:** Cloudflare Pages **no soporta tareas
+programadas**; los disparos por tiempo solo los tienen los Workers. Ese Worker
+no guarda ninguna credencial de Google — solo la URL de la plataforma y la
+clave compartida.
+
+```bash
+cd notificador && npx wrangler deploy        # desplegarlo
+curl "https://adc-notificador.<cuenta>.workers.dev/?clave=<CLAVE>"   # dispararlo a mano
+```
+
+**La consulta pide número Y correo** porque los números son consecutivos: solo
+con el número, cualquiera recorrería los reportes de todos, y ahí están el
+nombre y el correo de quien reportó. Un número inexistente y un correo que no
+corresponde dan **el mismo mensaje**, para no confirmar qué números existen.
 
 ### El QR de la constancia
 

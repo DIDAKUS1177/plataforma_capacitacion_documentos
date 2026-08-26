@@ -52,6 +52,10 @@ HOJAS = {
         "id_mejora", "fecha_hora", "aplicacion", "tipo", "criticidad",
         "descripcion", "nombre", "correo", "estado", "responsable", "respuesta",
         "fecha_respuesta", "id_changelog",
+        # Agregada al final (2026-08-26): cuando se le aviso por correo a quien
+        # reporto. Vacia = falta avisarle. Es lo que evita repetir el correo en
+        # cada revision.
+        "notificado_en",
     ],
 }
 
