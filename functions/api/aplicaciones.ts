@@ -61,14 +61,29 @@ async function leerCatalogo(env: Env): Promise<Aplicacion[]> {
   const id = env.LISTADO_MAESTRO_ID || ID_POR_DEFECTO;
   const hoja = env.LISTADO_MAESTRO_HOJA || HOJA_POR_DEFECTO;
 
-  try {
-    const filas = await leerValores(env, `${hoja}!A1:Z100`, id);
-    const apps = mapear(filas);
-    if (apps.length) return [...apps, RESPALDO[RESPALDO.length - 1]];
-    console.error("El Listado Maestro no trajo filas utilizables; se usa el respaldo.");
-  } catch (e) {
-    console.error("No se pudo leer el Listado Maestro, se usa el respaldo:", e);
+  // El nombre real de la hoja TERMINA EN ESPACIO ("Listado Maestro "), y hay
+  // paneles de configuración que recortan los espacios al guardar la variable
+  // — Cloudflare, entre ellos. Depender de que sobreviva es fragil, así que se
+  // intentan varias formas y, en último caso, la PRIMERA hoja del archivo:
+  // ese Sheet tiene una sola.
+  const rangos = [
+    `${hoja}!A1:Z100`,
+    `${hoja.trim()}!A1:Z100`,
+    `${hoja.trim()} !A1:Z100`,
+    "A1:Z100", // sin prefijo = primera hoja
+  ];
+
+  for (const rango of rangos) {
+    try {
+      const apps = mapear(await leerValores(env, rango, id));
+      if (apps.length) return [...apps, RESPALDO[RESPALDO.length - 1]];
+      console.warn(`El rango "${rango}" no trajo filas utilizables.`);
+    } catch (e) {
+      console.warn(`No se pudo leer "${rango}": ${(e as Error).message}`);
+    }
   }
+
+  console.error("Ningún rango del Listado Maestro funcionó; se usa el respaldo.");
   return RESPALDO;
 }
 
