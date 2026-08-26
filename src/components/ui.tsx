@@ -6,11 +6,7 @@ import type { ReactNode } from "react";
 export function Tarjeta({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={
-        "rounded-xl border border-ink-200 bg-white p-5 shadow-sm sm:p-7 " +
-        "dark:border-ink-700 dark:bg-ink-800 " +
-        className
-      }
+      className={"rounded-xl border border-ink-200 bg-white p-5 shadow-sm sm:p-7 " + className}
     >
       {children}
     </div>
@@ -20,8 +16,8 @@ export function Tarjeta({ children, className = "" }: { children: ReactNode; cla
 export function Titulo({ children, meta }: { children: ReactNode; meta?: string }) {
   return (
     <div className="mb-4">
-      <h2 className="text-xl font-semibold text-ink-900 dark:text-ink-50">{children}</h2>
-      {meta && <p className="mt-1 text-sm text-ink-500 dark:text-ink-400">{meta}</p>}
+      <h2 className="text-xl font-semibold text-ink-900">{children}</h2>
+      {meta && <p className="mt-1 text-sm text-ink-500">{meta}</p>}
     </div>
   );
 }
@@ -49,8 +45,7 @@ export function Boton({
   const estilo =
     variante === "principal"
       ? "bg-brand-600 text-white hover:bg-brand-700"
-      : "border border-ink-300 bg-white text-ink-700 hover:bg-ink-100 " +
-        "dark:border-ink-600 dark:bg-ink-800 dark:text-ink-200 dark:hover:bg-ink-700";
+      : "border border-ink-300 bg-white text-ink-700 hover:bg-ink-100";
 
   return (
     <button
@@ -67,8 +62,7 @@ export function Boton({
 
 const CLASES_CONTROL =
   "mt-1.5 w-full rounded-lg border border-ink-300 bg-white px-3 py-2.5 text-sm " +
-  "text-ink-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200 " +
-  "dark:border-ink-600 dark:bg-ink-900 dark:text-ink-100 dark:focus:ring-brand-800";
+  "text-ink-800 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-200";
 
 interface CampoProps {
   etiqueta: string;
@@ -79,9 +73,9 @@ interface CampoProps {
 function Etiqueta({ etiqueta, ayuda, children }: CampoProps) {
   return (
     <label className="mb-4 block">
-      <span className="text-sm font-semibold text-ink-700 dark:text-ink-200">{etiqueta}</span>
+      <span className="text-sm font-semibold text-ink-700">{etiqueta}</span>
       {children}
-      {ayuda && <span className="mt-1 block text-xs text-ink-500 dark:text-ink-400">{ayuda}</span>}
+      {ayuda && <span className="mt-1 block text-xs text-ink-500">{ayuda}</span>}
     </label>
   );
 }
@@ -188,7 +182,7 @@ export function Casilla({
   return (
     <label
       className="mb-3 flex cursor-pointer items-start gap-3 rounded-lg bg-ink-100 p-3 text-sm
-                 text-ink-700 dark:bg-ink-900 dark:text-ink-200"
+                 text-ink-700"
     >
       <input
         type="checkbox"
@@ -204,7 +198,7 @@ export function Casilla({
 export function Cargando({ texto = "Cargando…" }: { texto?: string }) {
   return (
     <Tarjeta>
-      <p className="flex items-center gap-2 py-4 text-sm text-ink-500 dark:text-ink-400">
+      <p className="flex items-center gap-2 py-4 text-sm text-ink-500">
         <Loader2 size={16} className="animate-spin" />
         {texto}
       </p>
@@ -215,8 +209,8 @@ export function Cargando({ texto = "Cargando…" }: { texto?: string }) {
 export function Aviso({ tono, children }: { tono: "ok" | "mal"; children: ReactNode }) {
   const estilo =
     tono === "ok"
-      ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
-      : "border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200";
+      ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+      : "border-brand-200 bg-brand-50 text-brand-800";
   const Icono = tono === "ok" ? CheckCircle2 : AlertCircle;
 
   return (

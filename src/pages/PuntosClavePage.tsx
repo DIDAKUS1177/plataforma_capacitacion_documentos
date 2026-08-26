@@ -32,7 +32,7 @@ export function PuntosClavePage() {
         <Titulo meta={`${CURSO.preguntas.length} preguntas, se aprueba con ${CURSO.minimoAprobado}. Esto es lo que entra.`}>
           Puntos clave
         </Titulo>
-        <p className="text-sm text-ink-600 dark:text-ink-300">
+        <p className="text-sm text-ink-600">
           Un repaso de lo que acabas de ver, en corto. Cada bloque dice de qué numeral
           del instructivo sale.
         </p>
@@ -40,7 +40,7 @@ export function PuntosClavePage() {
 
       {CURSO.modulos.map((m, i) => (
         <Tarjeta key={m.id} className="mb-4">
-          <h3 className="mb-3 flex items-start gap-2.5 text-lg font-semibold text-ink-900 dark:text-ink-50">
+          <h3 className="mb-3 flex items-start gap-2.5 text-lg font-semibold text-ink-900">
             <span
               className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full
                          bg-brand-600 text-xs font-bold text-white"
@@ -50,7 +50,7 @@ export function PuntosClavePage() {
             {m.titulo}
           </h3>
           <div
-            className="prosa text-ink-700 dark:text-ink-200"
+            className="prosa text-ink-700"
             dangerouslySetInnerHTML={{ __html: m.html }}
           />
         </Tarjeta>

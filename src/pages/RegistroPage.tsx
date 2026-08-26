@@ -90,7 +90,7 @@ export function RegistroPage() {
           {CURSO.nombre}
         </Titulo>
         <div
-          className="prosa text-ink-700 dark:text-ink-200"
+          className="prosa text-ink-700"
           dangerouslySetInnerHTML={{ __html: CURSO.intro }}
         />
       </Tarjeta>

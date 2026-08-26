@@ -83,23 +83,23 @@ export function EvaluacionPage() {
         Evaluación
       </Titulo>
 
-      <div className="divide-y divide-ink-200 dark:divide-ink-700">
+      <div className="divide-y divide-ink-200">
         {CURSO.preguntas.map((p, i) => (
           <div
             key={i}
             className={
               "py-4 " +
-              (falladas.has(i) ? "-mx-2 rounded-lg bg-brand-50 px-2 dark:bg-brand-950/40" : "")
+              (falladas.has(i) ? "-mx-2 rounded-lg bg-brand-50 px-2" : "")
             }
           >
-            <p className="mb-2 font-semibold text-ink-800 dark:text-ink-100">
+            <p className="mb-2 font-semibold text-ink-800">
               {i + 1}. {p.enunciado}
             </p>
             {p.opciones.map((opcion, j) => (
               <label
                 key={j}
                 className="flex cursor-pointer items-start gap-2.5 rounded-lg px-2 py-2 text-sm
-                           text-ink-700 hover:bg-ink-100 dark:text-ink-200 dark:hover:bg-ink-700"
+                           text-ink-700 hover:bg-ink-100:bg-ink-700"
               >
                 <input
                   type="radio"

@@ -77,12 +77,11 @@ export function FirmaPad({ alFirmar }: { alFirmar: (dataUrl: string) => void }) 
   return (
     <div className="mb-4">
       <div className="mb-1.5 flex items-center justify-between">
-        <span className="text-sm font-semibold text-ink-700 dark:text-ink-200">Tu firma</span>
+        <span className="text-sm font-semibold text-ink-700">Tu firma</span>
         <button
           type="button"
           onClick={borrar}
-          className="flex items-center gap-1 text-xs text-ink-500 hover:text-brand-600
-                     dark:text-ink-400"
+          className="flex items-center gap-1 text-xs text-ink-500 hover:text-brand-600"
         >
           <Eraser size={13} /> Borrar
         </button>
@@ -94,10 +93,10 @@ export function FirmaPad({ alFirmar }: { alFirmar: (dataUrl: string) => void }) 
         onPointerUp={terminar}
         onPointerLeave={terminar}
         className="h-40 w-full touch-none rounded-lg border border-dashed border-ink-300
-                   bg-white dark:border-ink-600"
+                   bg-white"
       />
       {vacio && (
-        <p className="mt-1 text-xs text-ink-500 dark:text-ink-400">
+        <p className="mt-1 text-xs text-ink-500">
           Firma con el dedo dentro del recuadro.
         </p>
       )}

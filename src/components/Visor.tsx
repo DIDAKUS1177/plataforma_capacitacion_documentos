@@ -58,8 +58,7 @@ export function Visor({
   return (
     <div>
       <div
-        className="relative overflow-hidden rounded-xl border border-ink-200 bg-white
-                   dark:border-ink-700 dark:bg-ink-900"
+        className="relative overflow-hidden rounded-xl border border-ink-200 bg-white"
       >
         {vecinas.map((n) => (
           <img
@@ -78,13 +77,12 @@ export function Visor({
           disabled={actual === 1}
           aria-label="Anterior"
           className="flex items-center gap-1 rounded-lg border border-ink-300 px-3 py-2 text-sm
-                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40
-                     dark:border-ink-600 dark:text-ink-200 dark:hover:bg-ink-700"
+                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40:bg-ink-700"
         >
           <ChevronLeft size={16} /> Anterior
         </button>
 
-        <span className="text-sm font-semibold text-ink-600 dark:text-ink-300">
+        <span className="text-sm font-semibold text-ink-600">
           {actual} / {paginas}
         </span>
 
@@ -93,15 +91,14 @@ export function Visor({
           disabled={ultima}
           aria-label="Siguiente"
           className="flex items-center gap-1 rounded-lg border border-ink-300 px-3 py-2 text-sm
-                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40
-                     dark:border-ink-600 dark:text-ink-200 dark:hover:bg-ink-700"
+                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40:bg-ink-700"
         >
           Siguiente <ChevronRight size={16} />
         </button>
       </div>
 
       {/* Barra de avance dentro del documento. */}
-      <div className="mt-3 h-1 overflow-hidden rounded-full bg-ink-200 dark:bg-ink-700">
+      <div className="mt-3 h-1 overflow-hidden rounded-full bg-ink-200">
         <div
           className="h-full rounded-full bg-brand-600 transition-all duration-200"
           style={{ width: `${(actual / paginas) * 100}%` }}
@@ -117,8 +114,7 @@ export function Visor({
             href={descarga.href}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-sm text-brand-600 hover:underline
-                       dark:text-brand-400"
+            className="flex items-center gap-1.5 text-sm text-brand-600 hover:underline"
           >
             <Download size={15} /> {descarga.texto}
           </a>

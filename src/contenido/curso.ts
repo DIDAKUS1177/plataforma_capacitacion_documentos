@@ -45,57 +45,45 @@ export interface Curso {
 export const CURSO: Curso = {
   codigo: "CAP-GEN-01",
   nombre: "Proceso de inspección y generación automática de reportes",
-  version: "2.0",
-  fechaVersion: "2026-08-24",
+  version: "2.1",
+  fechaVersion: "2026-08-26",
 
   intro: `
     <p>Esta capacitación cubre el proceso completo: desde que te asignan la
     inspección hasta que sale el reporte que se le entrega al cliente. Está
     basada en el instructivo <b>IT-OPE-C-12</b> (rev. 01).</p>
-    <p>Toma unos <b>30 minutos</b>: la presentación, el instructivo, un repaso
+    <p>Toma unos <b>25 minutos</b>: la presentación, el instructivo, un repaso
     de los puntos clave y una evaluación corta. Al aprobarla queda tu constancia
     y el registro de asistencia.</p>`,
 
-  // Los "puntos clave": el repaso redactado que va DESPUÉS del material
-  // oficial y antes de la evaluación. El material manda; esto resume lo que se
-  // evalúa.
+  // Los "puntos clave": el repaso que va DESPUÉS del material oficial y antes
+  // de la evaluación. Cada dato aparece una sola vez en todo el recorrido; si
+  // agregas algo, revisa que no esté ya en otro módulo.
   modulos: [
     {
       id: "m1",
       titulo: "Para qué existe este proceso",
       minutos: 3,
       html: `
-        <p>Antes, cada inspección se registraba en papel o en un archivo suelto y
-        alguien la transcribía después. Ahora la información que capturas en la
-        aplicación <b>es</b> el informe.</p>
+        <p>Antes, la inspección se anotaba en papel o en un archivo suelto y
+        alguien la pasaba a limpio después. Ahora no: lo que capturas en la
+        aplicación es lo que sale en el reporte que recibe el cliente.</p>
 
-        <div class="ojo"><b>La idea que hay que llevarse de este módulo:</b> lo
-        que escribes en la app sale tal cual en el reporte que firma la empresa y
-        recibe el cliente. <b>No hay nadie transcribiendo en el medio.</b></div>
+        <div class="ojo">Nadie transcribe en el medio. Un campo mal escrito
+        llega así hasta el informe final.</div>
 
-        <p>El instructivo lo plantea con tres pilares:</p>
-        <table>
-          <tr><th>Pilar</th><th>Qué significa en tu día</th></tr>
-          <tr>
-            <td><b>Calidad de los datos</b></td>
-            <td>Precisión, que se entienda, que cumpla y que esté escrito
-            siempre igual.</td>
-          </tr>
-          <tr>
-            <td><b>Integridad de la información</b></td>
-            <td>Se usan <b>solo</b> las aplicaciones internas. Nada de llevar los
-            datos por fuera y volverlos a montar.</td>
-          </tr>
-          <tr>
-            <td><b>Trazabilidad completa</b></td>
-            <td>Se puede seguir el rastro desde lo que tú capturaste hasta el
-            reporte entregado y el histórico.</td>
-          </tr>
-        </table>
+        <p>El instructivo se apoya en tres ideas:</p>
+        <ul>
+          <li><b>Calidad del dato.</b> Preciso, entendible y escrito siempre
+          igual.</li>
+          <li><b>Integridad.</b> Solo se usan las aplicaciones internas. Los
+          datos no salen a un archivo aparte para volver a montarlos.</li>
+          <li><b>Trazabilidad.</b> Del dato que capturaste al informe entregado
+          hay un rastro completo.</li>
+        </ul>
 
-        <p>Y lo que se busca ganar: <b>menos reprocesos</b> (no volver a pedir
-        datos que faltaron), <b>menos tiempo</b> de ciclo, y
-        <b>responsabilidades claras</b> sobre quién responde por qué.</p>
+        <p>Con eso se busca menos reproceso, ciclos más cortos y
+        responsabilidades claras.</p>
 
         <p class="fuente">IT-OPE-C-12, numerales 1 y 2.</p>`,
     },
@@ -103,79 +91,60 @@ export const CURSO: Curso = {
     {
       id: "m2",
       titulo: "Quién hace qué",
-      minutos: 4,
+      minutos: 3,
       html: `
-        <p>El proceso se mueve entre tres roles. Saber dónde termina el tuyo y
-        empieza el del otro es lo que evita que las cosas se queden quietas.</p>
+        <p>Tres roles se reparten el proceso.</p>
 
         <table>
-          <tr><th>Rol</th><th>De qué responde</th><th>Qué entrega</th></tr>
+          <tr><th>Rol</th><th>Responde de</th><th>Entrega</th></tr>
           <tr>
-            <td><b>Supervisor / Coordinador</b></td>
-            <td>Recibe y prioriza el requerimiento, verifica los documentos
-            soporte, hace seguimiento en los visualizadores y valida al final.</td>
-            <td>La orden de inspección y el <b>sello de aprobación</b> que
-            desbloquea la generación del reporte.</td>
+            <td><b>Supervisor</b></td>
+            <td>Recibir y priorizar el requerimiento, verificar los documentos
+            soporte, hacer seguimiento y validar al final.</td>
+            <td>La orden de inspección y el sello de aprobación.</td>
           </tr>
           <tr>
-            <td><b>Área de Desarrollo</b></td>
-            <td>Crea y mantiene las aplicaciones y los formatos, valida que los
-            datos lleguen consistentes y sostiene la infraestructura.</td>
-            <td>La app funcionando, y el <b>reporte final</b> generado.</td>
+            <td><b>Desarrollo</b></td>
+            <td>Crear y mantener las aplicaciones y los formatos, y sostener la
+            infraestructura.</td>
+            <td>La aplicación funcionando y el reporte final.</td>
           </tr>
           <tr>
             <td><b>Inspector</b></td>
-            <td>Ejecuta en campo, captura los datos y la evidencia, confirma que
-            se sincronizaron y corrige lo que esté mal.</td>
+            <td>Ejecutar en campo, capturar los datos y la evidencia,
+            sincronizar y corregir.</td>
             <td>El formulario completo, veraz y sincronizado.</td>
           </tr>
         </table>
 
-        <p>Tu rol tiene cuatro responsabilidades, y las cuatro pesan igual:</p>
-        <ul>
-          <li><b>Ejecución en campo</b> — aplicar el formato y capturar la
-          evidencia.</li>
-          <li><b>Manejo de la herramienta</b> — operar bien la app y el
-          dispositivo, incluida la geolocalización y la hora.</li>
-          <li><b>Sincronización</b> — asegurar que lo capturado llegó al
-          servidor. El instructivo la llama una responsabilidad
-          <b>indelegable</b>.</li>
-          <li><b>Corrección de inconsistencias</b> — detectar y arreglar los
-          errores <i>antes</i> de cerrar la jornada.</li>
-        </ul>
+        <p>Del inspector dependen cuatro cosas: ejecutar la inspección y
+        capturar la evidencia, operar bien la aplicación y el equipo, confirmar
+        que los datos subieron, y corregir lo que esté mal antes de darla por
+        terminada.</p>
 
         <p class="fuente">IT-OPE-C-12, numeral 3.</p>`,
     },
 
     {
       id: "m3",
-      titulo: "Antes de empezar",
+      titulo: "Antes de salir a campo",
       minutos: 2,
       html: `
-        <p>Tres chequeos de un minuto que evitan perder una jornada entera:</p>
+        <p>Tres chequeos antes de moverte:</p>
+        <ul>
+          <li>Que entres a la aplicación con tus credenciales.</li>
+          <li>Que el formato asignado sea el de la tarea que vas a hacer.</li>
+          <li>Que el equipo esté cargado.</li>
+        </ul>
 
-        <table>
-          <tr><th>Revisa</th><th>Si algo no está</th></tr>
-          <tr>
-            <td>Que puedas <b>entrar a la aplicación</b> con tus credenciales.</td>
-            <td>Avisa al Área de Desarrollo <b>antes</b> de salir a campo.</td>
-          </tr>
-          <tr>
-            <td>Que el <b>formato asignado corresponda</b> a la tarea que vas a
-            hacer.</td>
-            <td>Avisa al Área de Desarrollo. Si el formato no existe todavía, la
-            inspección se hace por el método antiguo hasta que se cree la app.</td>
-          </tr>
-          <tr>
-            <td>Que el <b>dispositivo esté cargado</b>.</td>
-            <td>Cárgalo. En campo no siempre hay dónde.</td>
-          </tr>
-        </table>
+        <p>Los dos primeros los resuelve Desarrollo, pero avisando antes de
+        salir y no desde el sitio. Si el formato todavía no existe como
+        aplicación, esa inspección se hace por el método antiguo hasta que se
+        cree.</p>
 
-        <div class="ojo">Los accesos no se piden en el momento: el Supervisor los
-        solicita formalmente y Desarrollo los entrega al personal asignado. Y no
-        se inicia la toma de datos sin la capacitación correspondiente — que es
-        justamente esto que estás haciendo.</div>
+        <div class="ojo">Los accesos los solicita el supervisor y los entrega
+        Desarrollo al personal asignado. Y no se empieza a tomar datos sin la
+        capacitación correspondiente.</div>
 
         <p class="fuente">IT-OPE-C-12, numerales 4.1.3 y 4.2.1.</p>`,
     },
@@ -185,160 +154,130 @@ export const CURSO: Curso = {
       titulo: "Capturar los datos y la evidencia",
       minutos: 5,
       html: `
-        <p>Registra de manera sistemática y detallada <b>todo</b> lo que pide el
-        formato: observaciones, mediciones, evidencia fotográfica y documental.
-        Directamente en la aplicación, no en una libreta para pasarlo después.</p>
+        <p>Todo lo que pide el formato va en la aplicación: observaciones,
+        mediciones, fotos y documentos. No en una libreta para pasarlo
+        después.</p>
 
-        <p><b>Las fotos</b></p>
-        <ul>
-          <li>Toda foto lleva <b>descripción</b>. Una foto sin descripción sale
-          en el informe con el espacio vacío debajo.</li>
-          <li>Que se vea el componente <b>y</b> una referencia de ubicación: una
-          foto sin contexto no sirve de evidencia.</li>
-          <li>Numéralas en el orden en que quieres que salgan en el informe.</li>
-        </ul>
+        <p><b>Fotos.</b> Cada una con su descripción; sin ella el informe deja
+        el pie en blanco. Que se vea el componente y alguna referencia de
+        ubicación, y numéralas en el orden en que deben aparecer.</p>
 
-        <p><b>Los datos que después cuesta arreglar</b></p>
+        <p><b>Metadatos.</b> La aplicación guarda por su cuenta la ubicación y
+        la hora de cada punto, que es lo que prueba dónde y cuándo se hizo la
+        inspección. Para eso el GPS del equipo tiene que estar activo.</p>
+
+        <p>Tres cosas que después cuesta arreglar:</p>
         <table>
-          <tr><th>Si haces esto…</th><th>…pasa esto</th></tr>
+          <tr><th>Si haces esto</th><th>Pasa esto</th></tr>
           <tr>
-            <td>Escribir el nombre distinto cada vez (con tilde, sin tilde, solo
-            iniciales)</td>
-            <td>El sistema no reconoce a la persona y no puede validar su
-            certificado. Hay que corregirlo a mano, uno por uno.</td>
+            <td>Escribir el nombre distinto cada vez: con tilde, sin tilde,
+            solo iniciales</td>
+            <td>El sistema no reconoce a la persona y no valida su certificado.
+            Se corrige a mano, uno por uno.</td>
           </tr>
           <tr>
             <td>Escribir la fecha en un formato distinto al del campo</td>
             <td>Llega vacía al informe, o sale cambiada de mes.</td>
           </tr>
           <tr>
-            <td>Dejar campos obligatorios en blanco "para después"</td>
+            <td>Dejar campos obligatorios en blanco para llenarlos luego</td>
             <td>El informe no se puede generar y te lo devuelven.</td>
           </tr>
         </table>
-
-        <p>La aplicación también captura metadatos por su cuenta
-        (<b>geolocalización y hora</b>). Esa es la prueba de dónde y cuándo se
-        hizo cada punto, así que el dispositivo debe tener la ubicación
-        activada.</p>
 
         <p class="fuente">IT-OPE-C-12, numeral 4.4.1.</p>`,
     },
 
     {
       id: "m5",
-      titulo: "Sincronización: con señal y sin señal",
-      minutos: 5,
+      titulo: "Sincronizar",
+      minutos: 4,
       html: `
-        <p>Este es el punto donde más información se pierde, y casi siempre por
-        lo mismo.</p>
+        <p><b>Con señal.</b> Los datos suben de inmediato y la aplicación lo
+        confirma en pantalla. Vale la pena mirar que efectivamente lo diga.</p>
 
-        <p><b>Con conexión</b></p>
-        <p>Los datos suben solos, de inmediato. El sistema te lo confirma en
-        pantalla: verifica que efectivamente lo diga.</p>
+        <p><b>Sin señal.</b> La aplicación sigue trabajando y guarda todo en el
+        equipo. Al recuperar conexión, presiona el botón <b>🔄</b> de arriba a
+        la derecha y espera a que confirme la subida antes de cerrar la
+        jornada.</p>
 
-        <p><b>Sin conexión (modo offline)</b></p>
-        <p>La aplicación <b>sigue funcionando normalmente</b> y guarda todo en el
-        dispositivo. No se pierde nada por no tener señal.</p>
-        <p>Cuando recuperes conexión, presiona el <b>botón de sincronización
-        🔄</b>, arriba a la derecha, y <b>confirma visualmente</b> que la subida
-        terminó antes de dar por cerrada la jornada.</p>
+        <div class="ojo">Si algo no parece haberse guardado, <b>no vuelvas a
+        crear el registro</b>. Quedan dos informes del mismo componente y
+        alguien tiene que borrar uno. Presiona sincronizar; si aun así no sube,
+        repórtalo.</div>
 
-        <div class="ojo"><b>Lo más importante de todo el módulo:</b> si algo no
-        parece haberse guardado, <b>no crees el registro otra vez</b>. Quedan dos
-        informes del mismo componente y alguien tiene que borrar uno. Presiona
-        sincronizar; si sigue sin subir, repórtalo desde la pestaña
-        <b>“Reportar”</b> de esta misma página.</div>
+        <p>La sincronización se dispara con el formulario lleno y finalizado.
+        Uno a medias puede quedarse en el equipo sin subir.</p>
 
-        <p>Un detalle que se pasa por alto: la sincronización se dispara cuando
-        el formulario está <b>correctamente lleno y finalizado</b>. Un formulario
-        a medias puede quedarse en el dispositivo sin subir.</p>
-
-        <p>Y que quede claro de quién es: el instructivo dice que asegurar la
-        sincronización es una <b>responsabilidad indelegable del Inspector</b>.
-        No es del supervisor ni de desarrollo.</p>
+        <p>Y es responsabilidad del inspector, no del supervisor ni de
+        Desarrollo: el instructivo la llama <b>indelegable</b>.</p>
 
         <p class="fuente">IT-OPE-C-12, numerales 4.3.1 y 4.4.1.</p>`,
     },
 
     {
       id: "m6",
-      titulo: "Antes de cerrar: la verificación",
+      titulo: "Antes de cerrar",
       minutos: 4,
       html: `
-        <p>Cuando la información ya subió, entra al módulo de resumen y haz una
-        revisión cruzada. Son tres preguntas:</p>
+        <p>Con la información ya subida, entra al resumen y revisa tres
+        cosas:</p>
+        <ol>
+          <li>Que todos los campos obligatorios quedaron llenos.</li>
+          <li>Que lo registrado es preciso y coherente con lo que
+          observaste.</li>
+          <li>Que la inspección figura como <b>Finalizada</b> o
+          <b>Cerrada</b>.</li>
+        </ol>
 
-        <table>
-          <tr><th>#</th><th>Confirma que…</th></tr>
-          <tr><td>a</td><td>Todos los campos obligatorios quedaron llenos.</td></tr>
-          <tr><td>b</td><td>Lo registrado es preciso y coherente con lo que
-          observaste.</td></tr>
-          <tr><td>c</td><td>La inspección figura como <b>“Finalizada”</b> o
-          <b>“Cerrada”</b> en el aplicativo.</td></tr>
-        </table>
+        <p>Lo que esté mal se corrige ahí mismo, con las funciones de edición de
+        la aplicación, antes de dar por terminada la jornada.</p>
 
-        <p>Cualquier error de digitación, omisión o dato incoherente se corrige
-        <b>en ese momento</b>, con las funciones de edición de la app, antes de
-        dar por concluida tu labor.</p>
+        <p>Si no puedes corregirlo, porque no sincroniza o un campo quedó
+        bloqueado o la aplicación falla, avisa a Desarrollo con tres datos:
+        <b>qué estabas haciendo</b>, <b>el mensaje de error</b> y <b>el número
+        de la inspección</b>.</p>
 
-        <p><b>Si no puedes corregirlo</b> — no sincroniza, un campo quedó
-        bloqueado, la app falla — tienes la obligación de avisar de inmediato al
-        Área de Desarrollo, indicando:</p>
-        <ul>
-          <li>qué estabas haciendo (los pasos previos),</li>
-          <li>el mensaje de error exacto, si lo hubo,</li>
-          <li>la sección afectada y <b>el número de la inspección</b>.</li>
-        </ul>
-        <p>Con esos tres datos se resuelve rápido; sin ellos toca adivinar.</p>
-
-        <div class="ojo">El instructivo lo llama <b>doble verificación</b> y dice
-        que es indispensable: solo la información verificada sirve como base
-        legítima para la notificación formal al cliente. Si el dato es flojo, el
-        informe también.</div>
+        <p>El instructivo llama a esto doble verificación: solo la información
+        verificada sirve de base para la notificación formal al cliente.</p>
 
         <p class="fuente">IT-OPE-C-12, numerales 4.4.2 y 6.</p>`,
     },
 
     {
       id: "m7",
-      titulo: "Qué pasa después, y cómo reportar",
+      titulo: "Qué pasa después",
       minutos: 3,
       html: `
         <p>Cuando cierras, el proceso sigue solo:</p>
         <table>
           <tr><th>Paso</th><th>Quién</th></tr>
-          <tr><td>Se dispara una <b>notificación automática</b> avisando que los
-          datos están listos para revisión.</td><td>El sistema</td></tr>
-          <tr><td>Revisa en los visualizadores: coherencia de los hallazgos,
+          <tr><td>Se dispara la notificación de que los datos están listos para
+          revisión.</td><td>El sistema</td></tr>
+          <tr><td>Se revisa en los visualizadores: coherencia de los hallazgos,
           completitud, y que las fotos concuerden con los números.</td>
           <td>Supervisor</td></tr>
-          <tr><td>Si encuentra fallas, documenta y <b>pide retrabajo</b>; tú
-          corriges y se vuelve a validar.</td><td>Supervisor → Inspector</td></tr>
-          <tr><td>Da el <b>sello de aprobación</b> solo con la información 100 %
-          correcta.</td><td>Supervisor</td></tr>
-          <tr><td>Se genera el <b>reporte final</b> con la plantilla estándar y
-          los datos aprobados.</td><td>Desarrollo / el sistema</td></tr>
+          <tr><td>Si hay fallas, se documentan y vuelven a ti para
+          corregirlas.</td><td>Supervisor</td></tr>
+          <tr><td>Se aprueba el flujo con la información completa.</td>
+          <td>Supervisor</td></tr>
+          <tr><td>Se genera el reporte final con la plantilla estándar.</td>
+          <td>Desarrollo</td></tr>
         </table>
 
-        <p>Por eso el retrabajo se siente: cada dato flojo devuelve el ciclo
-        varios pasos atrás.</p>
+        <p>Cada corrección devuelve el ciclo varios pasos atrás, y por eso el
+        retrabajo se nota tanto.</p>
 
-        <p><b>Reportar fallas y proponer mejoras</b></p>
-        <p>El numeral 5.3 del instructivo es explícito: ante cualquier problema
-        técnico, error, falla de funcionamiento o dificultad de llenado, hay que
-        informar <b>directamente y de manera inmediata</b> al Área de Desarrollo.</p>
-
-        <div class="ojo">Ese canal es la pestaña <b>“Reportar”</b> de arriba.
-        Queda con número de radicado, no se pierde, y si dejas tu correo te llega
-        la copia y te contamos en qué quedó. Una idea dicha de palabra en campo
-        se olvida; una radicada, no.</div>
+        <p><b>Reportar.</b> El numeral 5.3 obliga a informar a Desarrollo ante
+        cualquier falla, error o dificultad de llenado. Ese es el canal de la
+        pestaña <b>Reportar</b> de arriba: queda con número, y si dejas tu
+        correo te avisamos cuando se revise.</p>
 
         <p class="fuente">IT-OPE-C-12, numerales 4.5, 4.6 y 5.3.</p>`,
     },
   ],
 
-  // 6 de 8. Se recalcula proporcionalmente si una app agrega preguntas propias.
+  // 6 de 8. Se recalcula proporcionalmente si se agregan preguntas.
   minimoAprobado: 6,
 
   preguntas: [
@@ -352,11 +291,10 @@ export const CURSO: Curso = {
       correcta: 1,
     },
     {
-      enunciado:
-        "Estás en una zona sin señal. ¿Qué pasa con la aplicación?",
+      enunciado: "Estás en una zona sin señal. ¿Qué pasa con la aplicación?",
       opciones: [
         "Deja de funcionar hasta que haya internet",
-        "Sigue funcionando y guarda los datos en el dispositivo",
+        "Sigue funcionando y guarda los datos en el equipo",
         "Borra lo capturado para no ocupar memoria",
       ],
       correcta: 1,
@@ -366,7 +304,7 @@ export const CURSO: Curso = {
         "Recuperaste la señal después de trabajar sin conexión. ¿Qué haces?",
       opciones: [
         "Nada, ya subió solo mientras no había señal",
-        "Presiono el botón 🔄 y confirmo en pantalla que la subida terminó",
+        "Presiono el botón 🔄 y espero a que confirme la subida",
         "Vuelvo a crear el registro para asegurarme",
       ],
       correcta: 1,
@@ -405,16 +343,16 @@ export const CURSO: Curso = {
         "Según el instructivo, asegurar que los datos se sincronicen es responsabilidad…",
       opciones: [
         "Del Área de Desarrollo",
-        "Del Supervisor, que hace el seguimiento",
-        "Indelegable del Inspector",
+        "Del supervisor, que hace el seguimiento",
+        "Indelegable del inspector",
       ],
       correcta: 2,
     },
     {
       enunciado:
-        "Encuentras una falla en la aplicación que no te deja corregir un dato. ¿Cuál es el camino correcto?",
+        "Encuentras una falla en la aplicación que no te deja corregir un dato. ¿Qué haces?",
       opciones: [
-        "Reportarla de inmediato indicando los pasos, el error y el número de la inspección",
+        "Avisar a Desarrollo con los pasos, el mensaje de error y el número de la inspección",
         "Comentarlo de palabra cuando haya oportunidad",
         "Trabajar alrededor del problema y no decir nada",
       ],

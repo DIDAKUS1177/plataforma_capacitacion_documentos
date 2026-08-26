@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 /* Mismos tokens que el frontend de ADEMINCOL Central, para que las dos cosas
-   se vean como la misma casa. Modo oscuro por clase (.dark en <html>), no por
-   prefers-color-scheme, para que el botón mande sobre el sistema. */
-@custom-variant dark (&:where(.dark, .dark *));
+   se vean como la misma casa. */
 
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
@@ -43,11 +41,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.dark body {
-  background-color: var(--color-ink-900);
-  color: var(--color-ink-100);
-}
-
 /* Contenido de los módulos: viene como HTML desde curso.ts, así que se
    estiliza aquí en vez de con clases de Tailwind en cada etiqueta. */
 .prosa p {
@@ -83,13 +76,6 @@ body {
   background: var(--color-ink-100);
   font-weight: 600;
 }
-.dark .prosa th,
-.dark .prosa td {
-  border-color: var(--color-ink-700);
-}
-.dark .prosa th {
-  background: var(--color-ink-800);
-}
 .prosa img {
   max-width: 100%;
   height: auto;
@@ -103,9 +89,6 @@ body {
   border-radius: 0.5rem;
   margin: 0.85rem 0;
 }
-.dark .prosa .ojo {
-  background: color-mix(in srgb, var(--color-brand-800) 25%, transparent);
-}
 /* Cita del numeral del instructivo del que sale el módulo. Va discreta: es
    trazabilidad para auditoría, no algo que el inspector deba leer. */
 .prosa .fuente {
@@ -115,10 +98,6 @@ body {
   color: var(--color-ink-400);
   font-size: 0.8rem;
 }
-.dark .prosa .fuente {
-  border-color: var(--color-ink-700);
-  color: var(--color-ink-500);
-}
 
 .prosa .pendiente {
   background: var(--color-ink-100);
@@ -127,9 +106,4 @@ body {
   padding: 0.5rem 0.7rem;
   border-radius: 0.5rem;
   font-size: 0.9rem;
-}
-.dark .prosa .pendiente {
-  background: var(--color-ink-800);
-  border-color: var(--color-ink-600);
-  color: var(--color-ink-400);
 }

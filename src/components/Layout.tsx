@@ -8,23 +8,15 @@
  *   2. Los pasos del curso, que se van abriendo a medida que se avanza.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { GraduationCap, Lightbulb, Lock, Moon, Search, Sun } from "lucide-react";
+import { GraduationCap, Lightbulb, Lock, Search } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import logo from "../assets/logo-demincol.png";
 
 export function Layout() {
   const progreso = useProgreso();
   const { pathname } = useLocation();
-  const [oscuro, setOscuro] = useState(
-    () => window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false,
-  );
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", oscuro);
-  }, [oscuro]);
-
   // Al cambiar de página se sube el scroll: en celular, si no, se entra al
   // paso siguiente a media altura.
   useEffect(() => {
@@ -62,13 +54,9 @@ export function Layout() {
     <div className="flex min-h-full flex-col">
       {/* Branding, pestañas y barra de progreso van dentro de la MISMA cabecera
           pegajosa: con `top` fijos en cada bloque, el alto cambiante los
-          solapaba.
-
-          Y la cabecera NO cambia con el tema: el logo es tinta oscura sobre
-          fondo transparente, así que sobre un header oscuro desaparecía. De
-          paso queda idéntica a la de ADEMINCOL Central. */}
+          solapaba. */}
       <header className="sticky top-0 z-30 border-b-4 border-brand-600 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-3">
             <img src={logo} alt="Demincol" className="h-9 w-auto shrink-0 sm:h-11" />
             <div className="min-w-0">
@@ -80,16 +68,6 @@ export function Layout() {
               </p>
             </div>
           </div>
-
-          <button
-            onClick={() => setOscuro((v) => !v)}
-            aria-label="Cambiar tema"
-            title="Cambiar tema"
-            className="shrink-0 rounded-lg p-2 text-ink-500 transition hover:bg-ink-100
-                       hover:text-brand-600"
-          >
-            {oscuro ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
         </div>
 
         {/* Nivel 1 — las dos pestañas */}
@@ -114,7 +92,7 @@ export function Layout() {
       {/* Nivel 2 — los pasos. No es pegajoso a propósito: en celular, tres
           barras fijas se comen un cuarto de la pantalla. */}
       {enCapacitacion && (
-        <div className="border-b border-ink-200 bg-white dark:border-ink-700 dark:bg-ink-800">
+        <div className="border-b border-ink-200 bg-white">
           <div className="mx-auto max-w-3xl px-3">
             <div className="-mx-1 flex gap-1 overflow-x-auto [scrollbar-width:none]">
               {pasos.map((p) => (
@@ -129,7 +107,7 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="px-4 py-6 text-center text-xs text-ink-400 dark:text-ink-500">
+      <footer className="px-4 py-6 text-center text-xs text-ink-400">
         ADEMINCOL S.A.S.
       </footer>
     </div>
@@ -179,8 +157,7 @@ function Paso({
       <span
         title="Se habilita más adelante"
         className="flex shrink-0 cursor-not-allowed items-center gap-1 whitespace-nowrap
-                   border-b-2 border-transparent px-2 py-2.5 text-xs text-ink-400
-                   dark:text-ink-500"
+                   border-b-2 border-transparent px-2 py-2.5 text-xs text-ink-400"
       >
         <Lock size={11} />
         {texto}
@@ -195,12 +172,12 @@ function Paso({
       className={({ isActive }) =>
         "flex shrink-0 items-center gap-1 whitespace-nowrap border-b-2 px-2 py-2.5 text-xs transition-colors " +
         (isActive
-          ? "border-brand-600 font-semibold text-brand-700 dark:text-brand-400"
-          : "border-transparent text-ink-600 hover:text-ink-900 dark:text-ink-400 dark:hover:text-ink-100")
+          ? "border-brand-600 font-semibold text-brand-700"
+          : "border-transparent text-ink-600 hover:text-ink-900:text-ink-100")
       }
     >
       {texto}
-      {hecho && <span className="text-emerald-600 dark:text-emerald-400">✓</span>}
+      {hecho && <span className="text-emerald-600">✓</span>}
     </NavLink>
   );
 }

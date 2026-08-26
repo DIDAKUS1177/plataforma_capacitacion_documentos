@@ -79,15 +79,15 @@ export function ConstanciaPage() {
     return (
       <Tarjeta className="text-center">
         <CheckCircle2 size={44} className="mx-auto text-emerald-600" />
-        <h2 className="mt-3 text-xl font-semibold text-ink-900 dark:text-ink-50">Listo</h2>
-        <p className="mt-2 text-sm text-ink-600 dark:text-ink-300">{exito}</p>
+        <h2 className="mt-3 text-xl font-semibold text-ink-900">Listo</h2>
+        <p className="mt-2 text-sm text-ink-600">{exito}</p>
 
         {enlace && (
           <>
-            <p className="mt-6 text-sm font-semibold text-ink-700 dark:text-ink-200">
+            <p className="mt-6 text-sm font-semibold text-ink-700">
               Tu constancia
             </p>
-            <p className="mx-auto mt-1 max-w-xs text-xs text-ink-500 dark:text-ink-400">
+            <p className="mx-auto mt-1 max-w-xs text-xs text-ink-500">
               Escanea o guarda este código: con él se comprueba que la capacitación
               es real, sin tener que buscarla en ninguna parte.
             </p>
@@ -102,12 +102,11 @@ export function ConstanciaPage() {
               href={enlace}
               target="_blank"
               rel="noreferrer"
-              className="mt-4 inline-block break-all text-xs text-brand-600 hover:underline
-                         dark:text-brand-400"
+              className="mt-4 inline-block break-all text-xs text-brand-600 hover:underline"
             >
               {enlace}
             </a>
-            <p className="mt-3 text-xs text-ink-400 dark:text-ink-500">
+            <p className="mt-3 text-xs text-ink-400">
               También te llegó por correo.
             </p>
           </>
@@ -133,13 +132,12 @@ export function ConstanciaPage() {
       </Titulo>
 
       <dl
-        className="mb-5 divide-y divide-ink-200 rounded-lg border border-ink-200
-                   dark:divide-ink-700 dark:border-ink-700"
+        className="mb-5 divide-y divide-ink-200 rounded-lg border border-ink-200"
       >
         {filas.map(([k, v]) => (
           <div key={k} className="flex gap-3 px-3 py-2 text-sm">
-            <dt className="w-32 shrink-0 text-ink-500 dark:text-ink-400">{k}</dt>
-            <dd className="min-w-0 font-medium text-ink-800 dark:text-ink-100">{v || "—"}</dd>
+            <dt className="w-32 shrink-0 text-ink-500">{k}</dt>
+            <dd className="min-w-0 font-medium text-ink-800">{v || "—"}</dd>
           </div>
         ))}
       </dl>
