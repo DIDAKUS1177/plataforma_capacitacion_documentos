@@ -126,16 +126,25 @@ export async function buscarConstanciaPrevia(
 }
 
 /**
- * Consecutivo MEJ-0001 a partir de las filas existentes.
+ * Consecutivo MEJ-0001.
  *
- * No hay candado como el de Apps Script: dos envíos simultáneos podrían leer
- * el mismo número. Se asume tolerable (son ~45 inspectores reportando de vez
- * en cuando) y el id no es llave de nada río abajo — la fila igual queda
- * completa. Si algún día importa, hay que mover el consecutivo a un KV.
+ * Se calcula sobre el número MÁS ALTO que ya exista, no sobre la cantidad de
+ * filas: si se borran filas viejas —limpiar datos de prueba, por ejemplo— la
+ * cuenta por cantidad volvería atrás y repetiría números ya usados.
+ *
+ * No hay candado: dos envíos en el mismo instante podrían leer el mismo
+ * número. Se asume tolerable con ~45 inspectores, y el id no es llave de nada
+ * río abajo. Si algún día importa, el consecutivo va a un KV.
  */
 export async function siguienteIdMejora(env: Env): Promise<string> {
   const filas = await leerValores(env, `${HOJA_MEJORAS}!A2:A`);
-  return "MEJ-" + String(filas.length + 1).padStart(4, "0");
+
+  let mayor = 0;
+  for (const fila of filas) {
+    const n = Number((fila[0] || "").trim().replace(/^MEJ-/i, ""));
+    if (Number.isFinite(n) && n > mayor) mayor = n;
+  }
+  return "MEJ-" + String(mayor + 1).padStart(4, "0");
 }
 
 /**
