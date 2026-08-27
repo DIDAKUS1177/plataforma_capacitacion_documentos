@@ -56,6 +56,11 @@ HOJAS = {
         # reporto. Vacia = falta avisarle. Es lo que evita repetir el correo en
         # cada revision.
         "notificado_en",
+        # Agregada al final (2026-08-27): telefono de WhatsApp, opcional. Es
+        # para que calidad pueda llamar cuando el reporte bloquea el trabajo y
+        # el correo se queda corto. No se envia nada por WhatsApp: eso pediria
+        # una cuenta de WhatsApp Business y tiene costo.
+        "whatsapp",
     ],
 }
 

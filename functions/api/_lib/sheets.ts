@@ -167,6 +167,7 @@ export const COL_MEJORA = {
   fechaRespuesta: 11,
   idChangelog: 12,
   notificadoEn: 13, // columna N
+  whatsapp: 14, // columna O
 };
 
 /**

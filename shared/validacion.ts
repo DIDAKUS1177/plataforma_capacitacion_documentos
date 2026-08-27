@@ -94,5 +94,25 @@ export function validarMejora(d: Partial<DatosMejora>): string | null {
   if (correo && !validarCorreo(correo)) {
     return "El correo que dejaste no tiene un formato válido (o déjalo vacío).";
   }
+
+  const whatsapp = (d.whatsapp || "").trim();
+  if (whatsapp && !validarTelefono(whatsapp)) {
+    return "Revisa el número de WhatsApp: escríbelo con indicativo si es del exterior (o déjalo vacío).";
+  }
   return null;
+}
+
+/**
+ * Solo cuenta dígitos. Se acepta con o sin +57, con espacios o guiones: la
+ * gente lo escribe de las dos formas y rechazarlo por el formato solo logra
+ * que dejen el campo vacío.
+ */
+export function validarTelefono(numero: string): boolean {
+  const digitos = (numero || "").replace(/\D/g, "");
+  return digitos.length >= 7 && digitos.length <= 15;
+}
+
+/** Deja el número en dígitos, para que en el Sheet queden todos igual. */
+export function normalizarTelefono(numero: string): string {
+  return (numero || "").replace(/\D/g, "");
 }

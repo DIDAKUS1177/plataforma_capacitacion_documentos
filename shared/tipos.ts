@@ -76,6 +76,8 @@ export interface DatosMejora {
   descripcion: string;
   nombre: string;
   correo: string;
+  /** Opcional. Para que calidad pueda llamar si el reporte bloquea el trabajo. */
+  whatsapp: string;
 }
 
 export interface Resultado<T = unknown> {

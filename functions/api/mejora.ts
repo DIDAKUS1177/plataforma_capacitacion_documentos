@@ -1,7 +1,7 @@
 /** POST /api/mejora — registra una falla o una propuesta de mejora. */
 
 import type { DatosMejora } from "../../shared/tipos";
-import { validarMejora } from "../../shared/validacion";
+import { normalizarTelefono, validarMejora } from "../../shared/validacion";
 import type { Env } from "./_lib/entorno";
 import { enviarCorreo } from "./_lib/correo";
 import { agregarFila, HOJA_MEJORAS, siguienteIdMejora } from "./_lib/sheets";
@@ -18,6 +18,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     const hoja = HOJA_MEJORAS;
     const id = await siguienteIdMejora(env);
     const correo = (datos.correo || "").trim().toLowerCase();
+    const whatsapp = normalizarTelefono(datos.whatsapp || "");
 
     await agregarFila(env, hoja, [
       id,
@@ -33,6 +34,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       "", // respuesta
       "", // fecha_respuesta
       "", // id_changelog
+      "", // notificado_en
+      whatsapp,
     ]);
 
     // El acuse va después de escribir: si el correo falla, el reporte ya está
@@ -106,6 +109,7 @@ function cuerpoParaQuienReporta(id: string, datos: DatosMejora, enlace: string):
         ${fila("Aplicación", datos.aplicacion)}
         ${fila("Tipo", datos.tipo)}
         ${fila("Qué tanto te afecta", datos.criticidad || "—")}
+        ${datos.whatsapp ? fila("WhatsApp", datos.whatsapp) : ""}
         ${fila("Fecha", fechaLegible())}
       </table>
       <p style="margin-top:16px"><b>Lo que reportaste</b></p>
@@ -132,6 +136,7 @@ function cuerpoParaCalidad(id: string, datos: DatosMejora): string {
         ${fila("Aplicación", datos.aplicacion)}
         ${fila("Tipo", datos.tipo)}
         ${fila("Criticidad", datos.criticidad || "—")}
+        ${datos.whatsapp ? fila("WhatsApp", datos.whatsapp) : ""}
         ${fila("Fecha", fechaLegible())}
       </table>
       <p style="background:#f8fafc;border-left:3px solid #dc2626;padding:10px 12px;
