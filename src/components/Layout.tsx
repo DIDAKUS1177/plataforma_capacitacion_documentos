@@ -4,13 +4,13 @@
  * pestañas subrayadas en brand-600 cuando están activas.
  *
  * Dos niveles:
- *   1. Las tres pestañas de siempre: Capacitación · Reportar · Mi reporte.
+ *   1. Las cuatro pestañas: Capacitación · Mis cursos · Reportar · Mi reporte.
  *   2. Los pasos del curso, que se van abriendo a medida que se avanza.
  */
 
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { GraduationCap, Lightbulb, Lock, Search } from "lucide-react";
+import { Award, GraduationCap, Lightbulb, Lock, Search } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import logo from "../assets/logo-demincol.png";
 
@@ -70,10 +70,11 @@ export function Layout() {
           </div>
         </div>
 
-        {/* Nivel 1 — las dos pestañas */}
+        {/* Nivel 1 — las pestañas principales */}
         <nav className="border-t border-ink-100">
-          <div className="mx-auto flex max-w-3xl px-2">
+          <div className="mx-auto flex max-w-3xl overflow-x-auto px-2 [scrollbar-width:none]">
             <PestanaPrincipal a="/capacitacion" icono={GraduationCap} texto="Capacitación" />
+            <PestanaPrincipal a="/mis-cursos" icono={Award} texto="Mis cursos" />
             <PestanaPrincipal a="/reportar" icono={Lightbulb} texto="Reportar" />
             <PestanaPrincipal a="/mi-reporte" icono={Search} texto="Mi reporte" />
           </div>
@@ -173,7 +174,7 @@ function Paso({
         "flex shrink-0 items-center gap-1 whitespace-nowrap border-b-2 px-2 py-2.5 text-xs transition-colors " +
         (isActive
           ? "border-brand-600 font-semibold text-brand-700"
-          : "border-transparent text-ink-600 hover:text-ink-900:text-ink-100")
+          : "border-transparent text-ink-600 hover:text-ink-900")
       }
     >
       {texto}

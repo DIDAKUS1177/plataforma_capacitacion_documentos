@@ -77,7 +77,7 @@ export function Visor({
           disabled={actual === 1}
           aria-label="Anterior"
           className="flex items-center gap-1 rounded-lg border border-ink-300 px-3 py-2 text-sm
-                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40:bg-ink-700"
+                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40"
         >
           <ChevronLeft size={16} /> Anterior
         </button>
@@ -91,7 +91,7 @@ export function Visor({
           disabled={ultima}
           aria-label="Siguiente"
           className="flex items-center gap-1 rounded-lg border border-ink-300 px-3 py-2 text-sm
-                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40:bg-ink-700"
+                     text-ink-700 transition hover:bg-ink-100 disabled:opacity-40"
         >
           Siguiente <ChevronRight size={16} />
         </button>

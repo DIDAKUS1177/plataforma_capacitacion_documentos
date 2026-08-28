@@ -38,6 +38,32 @@ export interface EstadoReporte {
   respondido: boolean;
 }
 
+/** Lo que devuelve el listado de personal para autocompletar el registro. */
+export interface Persona {
+  encontrada: boolean;
+  nombre?: string;
+  correo?: string;
+  cargo?: string;
+  area?: string;
+}
+
+export interface CapacitacionHecha {
+  fecha: string;
+  curso: string;
+  version: string;
+  formato: string;
+  resultado: string;
+  id: string;
+}
+
+export interface Historial {
+  encontrada: boolean;
+  enRoster: boolean;
+  nombre: string;
+  hechas: CapacitacionHecha[];
+  aMedias: { fecha: string; formato: string }[];
+}
+
 export interface ConfigServidor {
   dominio: string;
   exigeFirma: boolean;
@@ -83,6 +109,14 @@ async function enviar<T>(ruta: string, datos: unknown): Promise<Resultado<T>> {
 
 export function obtenerConfig(): Promise<ConfigServidor> {
   return pedir<ConfigServidor>("/api/config");
+}
+
+export function buscarPersona(cedula: string): Promise<Persona> {
+  return pedir<Persona>(`/api/persona?cedula=${encodeURIComponent(cedula)}`);
+}
+
+export function obtenerHistorial(cedula: string): Promise<Historial> {
+  return pedir<Historial>(`/api/historial?cedula=${encodeURIComponent(cedula)}`);
 }
 
 export function obtenerAplicaciones(): Promise<Aplicacion[]> {

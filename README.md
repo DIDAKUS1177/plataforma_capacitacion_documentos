@@ -58,6 +58,8 @@ Inspector (celular)
 | `POST /api/mejora` | Radica la falla o la sugerencia y devuelve el número |
 | `GET /api/verificar` | Comprueba una constancia por su código. Público, datos mínimos |
 | `POST /api/consulta` | Estado de un reporte del buzón. Pide número **y** correo |
+| `GET /api/persona` | Datos del listado de personal, para autocompletar el registro |
+| `GET /api/historial` | Qué capacitaciones lleva una cédula. Solo formación |
 | `POST /api/notificar` | Manda los correos de las respuestas nuevas. Protegido con clave |
 
 ## Estructura
@@ -88,8 +90,38 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 | `/capacitacion/evaluacion` | Se abre al recorrer todo el material |
 | `/capacitacion/constancia` | Se abre al aprobar |
 | `/reportar?app=APP-022` | Buzón, con la app precargada |
+| `/mis-cursos` | Qué capacitaciones lleva una persona |
 | `/mi-reporte?id=MEJ-0007` | Consultar en qué quedó lo reportado |
 | `/verificar/<id>` | Lo que abre el QR. Público y fuera del curso |
+
+### El listado de personal
+
+`scripts/importar_personal.py` carga el Excel de RR. HH. a la hoja `personal`
+(145 personas). Se usa para dos cosas: autocompletar el registro a partir de la
+cédula, y saber quién falta por capacitarse.
+
+```bash
+python scripts/importar_personal.py <service-account.json> "Base personal activo.xlsx"
+```
+
+La hoja se reemplaza entera en cada corrida: la fuente de verdad es el Excel.
+**No se importa el correo personal** — para lo que hace la plataforma basta el
+corporativo.
+
+Quien no esté en el listado **puede capacitarse igual**, llenando los datos a
+mano: un contratista nuevo tiene que poder hacerlo el mismo día que llega.
+
+### Sobre entrar con la cédula
+
+`/mis-cursos` pide solo la cédula. Fue una decisión explícita del usuario, con
+la salvedad dicha: **la cédula no es un secreto** — está en los formatos en
+papel, en RR. HH. y la saben los compañeros. Por eso ese endpoint devuelve
+únicamente formación: curso, formato, fecha, resultado y el código de la
+constancia. Ni correo, ni cargo, ni teléfono.
+
+Si algún día se quiere identidad de verdad, lo indicado es un código de seis
+dígitos al correo corporativo (los 145 lo tienen). El cambio sería pedir el
+código antes de llamar al endpoint; `historial.ts` no habría que tocarlo.
 
 ### El ciclo del buzón
 

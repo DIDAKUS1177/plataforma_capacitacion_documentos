@@ -99,7 +99,7 @@ export function EvaluacionPage() {
               <label
                 key={j}
                 className="flex cursor-pointer items-start gap-2.5 rounded-lg px-2 py-2 text-sm
-                           text-ink-700 hover:bg-ink-100:bg-ink-700"
+                           text-ink-700 hover:bg-ink-100"
               >
                 <input
                   type="radio"
