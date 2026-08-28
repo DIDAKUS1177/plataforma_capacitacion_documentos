@@ -10,13 +10,23 @@
 
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Award, GraduationCap, Lightbulb, Lock, Search } from "lucide-react";
+import { Award, GraduationCap, Lightbulb, Lock, LogOut, Search } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
+import { useSesion } from "../lib/sesion";
 import logo from "../assets/logo-demincol.png";
 
 export function Layout() {
   const progreso = useProgreso();
+  const { persona, salir } = useSesion();
   const { pathname } = useLocation();
+
+  // Salir recarga la página en vez de navegar. El progreso del curso vive en
+  // memoria, y en una tablet compartida en campo el siguiente no puede heredar
+  // los pasos ya marcados del anterior.
+  function cerrar() {
+    salir();
+    window.location.assign("/entrar");
+  }
   // Al cambiar de página se sube el scroll: en celular, si no, se entra al
   // paso siguiente a media altura.
   useEffect(() => {
@@ -56,7 +66,7 @@ export function Layout() {
           pegajosa: con `top` fijos en cada bloque, el alto cambiante los
           solapaba. */}
       <header className="sticky top-0 z-30 border-b-4 border-brand-600 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-2.5">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-2.5">
           <div className="flex min-w-0 items-center gap-3">
             <img src={logo} alt="Demincol" className="h-9 w-auto shrink-0 sm:h-11" />
             <div className="min-w-0">
@@ -64,10 +74,22 @@ export function Layout() {
                 Capacitación de inspectores
               </p>
               <p className="truncate text-xs text-ink-400">
-                {registro ? registro.nombre : "Formación y buzón de mejoras"}
+                {persona?.nombre || registro?.nombre || "Entraste sin registro"}
               </p>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={cerrar}
+            title="Salir"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-300 px-2.5
+                       py-1.5 text-xs font-medium text-ink-600 transition-colors
+                       hover:bg-ink-100 hover:text-ink-900"
+          >
+            <LogOut size={14} />
+            <span className="hidden sm:inline">Salir</span>
+          </button>
         </div>
 
         {/* Nivel 1 — las pestañas principales */}

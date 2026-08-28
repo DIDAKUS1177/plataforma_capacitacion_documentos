@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Clock, Search } from "lucide-react";
 import { consultarReporte, ErrorApi, type EstadoReporte } from "../api/cliente";
+import { useSesion } from "../lib/sesion";
 import { Aviso, Boton, CampoTexto, Tarjeta, Titulo } from "../components/ui";
 
 /** Colores por estado. Lo que no esté aquí sale en gris. */
@@ -24,8 +25,12 @@ const TONOS: Record<string, string> = {
 export function ConsultaPage() {
   // El acuse por correo trae ?id=MEJ-0007 para no tener que teclearlo.
   const [params] = useSearchParams();
+  // El correo sale de la sesión. Se deja abrir el campo porque alguien pudo
+  // haber reportado antes con otro correo, y el reporte quedó atado a ese.
+  const { persona } = useSesion();
   const [id, setId] = useState(params.get("id") || "");
-  const [correo, setCorreo] = useState("");
+  const [correo, setCorreo] = useState(persona?.correo || "");
+  const [otroCorreo, setOtroCorreo] = useState(!persona);
 
   const [datos, setDatos] = useState<EstadoReporte | null>(null);
   const [error, setError] = useState("");
@@ -52,7 +57,7 @@ export function ConsultaPage() {
   return (
     <>
       <Tarjeta className="mb-4">
-        <Titulo meta="Con el número que te dimos al reportar y el correo que dejaste.">
+        <Titulo meta="Con el número que te dimos al reportar.">
           Consulta tu reporte
         </Titulo>
 
@@ -63,13 +68,26 @@ export function ConsultaPage() {
           marcador="MEJ-0007"
           ayuda="Está en el correo que te llegó al reportar."
         />
-        <CampoTexto
-          etiqueta="Tu correo"
-          tipo="email"
-          valor={correo}
-          alCambiar={setCorreo}
-          marcador="el mismo con el que reportaste"
-        />
+        {otroCorreo ? (
+          <CampoTexto
+            etiqueta="Tu correo"
+            tipo="email"
+            valor={correo}
+            alCambiar={setCorreo}
+            marcador="el mismo con el que reportaste"
+          />
+        ) : (
+          <p className="mb-4 rounded-lg bg-ink-100 px-3 py-2.5 text-sm text-ink-600">
+            Buscamos los reportes hechos con {persona?.correo}.{" "}
+            <button
+              type="button"
+              onClick={() => setOtroCorreo(true)}
+              className="underline underline-offset-2 hover:text-ink-900"
+            >
+              Usé otro correo
+            </button>
+          </p>
+        )}
 
         {error && <Aviso tono="mal">{error}</Aviso>}
 

@@ -1,40 +1,77 @@
 /**
  * "Mis cursos": qué capacitaciones lleva una persona.
  *
+ * Si entró con su cédula, la lista se carga sola: no tiene sentido volver a
+ * pedirle el dato con el que acaba de entrar. Queda un enlace para consultar
+ * otra cédula, que es lo que hace un supervisor revisando a su cuadrilla.
+ *
  * Se entra con la cédula sola. Como la cédula no es un secreto, esta pantalla
  * muestra ÚNICAMENTE formación: curso, formato, fecha y resultado. Ni correo,
  * ni cargo, ni teléfono. Quien consulte una cédula ajena ve qué cursos hizo esa
  * persona, no cómo contactarla.
  */
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Award, Clock, Search } from "lucide-react";
 import { ErrorApi, obtenerHistorial, type Historial } from "../api/cliente";
-import { Aviso, Boton, CampoTexto, Tarjeta, Titulo } from "../components/ui";
+import { useSesion } from "../lib/sesion";
+import { Aviso, Boton, Cargando, CampoTexto, Tarjeta, Titulo } from "../components/ui";
 
 export function HistorialPage() {
-  const [cedula, setCedula] = useState("");
+  const { persona } = useSesion();
+
+  const [cedula, setCedula] = useState(persona?.cedula || "");
   const [datos, setDatos] = useState<Historial | null>(null);
   const [error, setError] = useState("");
   const [buscando, setBuscando] = useState(false);
+  // Con sesión el formulario arranca escondido; se abre para mirar a otro.
+  const [abierto, setAbierto] = useState(!persona);
 
-  async function buscar() {
+  const buscar = useCallback(async (ced: string) => {
     setError("");
     setDatos(null);
     setBuscando(true);
     try {
-      setDatos(await obtenerHistorial(cedula));
+      setDatos(await obtenerHistorial(ced));
     } catch (e) {
       setError(e instanceof ErrorApi ? e.message : "No se pudo consultar. Intenta otra vez.");
     } finally {
       setBuscando(false);
     }
+  }, []);
+
+  // Con sesión no hay nada que preguntar: se carga de entrada.
+  useEffect(() => {
+    if (persona) buscar(persona.cedula);
+  }, [persona, buscar]);
+
+  if (persona && !abierto) {
+    return (
+      <>
+        {buscando && <Cargando texto="Buscando tus capacitaciones…" />}
+        {error && (
+          <Tarjeta className="mb-4">
+            <Aviso tono="mal">{error}</Aviso>
+            <Boton onClick={() => buscar(persona.cedula)}>Reintentar</Boton>
+          </Tarjeta>
+        )}
+        {datos && <Resultado datos={datos} />}
+
+        <button
+          type="button"
+          onClick={() => setAbierto(true)}
+          className="mt-4 text-xs text-ink-500 underline underline-offset-2 hover:text-ink-800"
+        >
+          Consultar otra cédula
+        </button>
+      </>
+    );
   }
 
   return (
     <>
       <Tarjeta className="mb-4">
-        <Titulo meta="Escribe tu cédula para ver qué has hecho y qué te falta.">
+        <Titulo meta="Escribe la cédula para ver qué ha hecho y qué le falta.">
           Mis capacitaciones
         </Titulo>
 
@@ -49,7 +86,7 @@ export function HistorialPage() {
         {error && <Aviso tono="mal">{error}</Aviso>}
 
         <div className="mt-4">
-          <Boton onClick={buscar} cargando={buscando}>
+          <Boton onClick={() => buscar(cedula)} cargando={buscando}>
             <Search size={15} /> Consultar
           </Boton>
         </div>
