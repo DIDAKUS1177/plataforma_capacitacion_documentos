@@ -152,8 +152,9 @@ export function Layout() {
         <Outlet />
       </main>
 
-      <footer className="px-4 py-6 text-center text-xs text-ink-400">
+      <footer className="relative px-4 py-6 text-center text-xs text-ink-400">
         ADEMINCOL S.A.S.
+        <span className="mt-0.5 block">Área de desarrollo</span>
       </footer>
     </div>
   );

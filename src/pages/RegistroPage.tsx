@@ -18,13 +18,7 @@ import { CURSO } from "../contenido/curso";
 import { useProgreso } from "../lib/progreso";
 import { useAplicaciones } from "../lib/aplicaciones";
 import { useSesion } from "../lib/sesion";
-import {
-  buscarPersona,
-  ErrorApi,
-  obtenerConfig,
-  registrarInicio,
-  type ConfigServidor,
-} from "../api/cliente";
+import { ErrorApi, obtenerConfig, registrarInicio, type ConfigServidor } from "../api/cliente";
 import { validarRegistro } from "../../shared/validacion";
 import { Aviso, Boton, CampoSelect, CampoTexto, Tarjeta, Titulo } from "../components/ui";
 import type { DatosRegistro } from "../../shared/tipos";
@@ -49,52 +43,12 @@ export function RegistroPage() {
 
   const [error, setError] = useState("");
   const [enviando, setEnviando] = useState(false);
-  const [buscada, setBuscada] = useState<"no" | "buscando" | "si" | "sin-registro">("no");
 
   useEffect(() => {
     obtenerConfig()
       .then(setConfig)
       .catch(() => {});
   }, []);
-
-  // Solo en el formulario a mano. Al escribir la cédula se llenan los datos
-  // desde el listado de personal. Se espera medio segundo tras la última tecla:
-  // si no, cada dígito sería una consulta, y la cuota de lectura del Sheet se
-  // comparte con los reportes.
-  useEffect(() => {
-    if (persona) return;
-
-    const limpia = cedula.replace(/\D/g, "");
-    if (limpia.length < 6) {
-      setBuscada("no");
-      return;
-    }
-
-    let vigente = true;
-    setBuscada("buscando");
-    const espera = setTimeout(() => {
-      buscarPersona(limpia)
-        .then((p) => {
-          if (!vigente) return;
-          if (!p.encontrada) {
-            setBuscada("sin-registro");
-            return;
-          }
-          setBuscada("si");
-          // No se pisa lo que la persona ya escribió a mano.
-          setNombre((v) => v || p.nombre || "");
-          setCorreo((v) => v || p.correo || "");
-          setCargo((v) => v || p.cargo || "");
-          setAreaUn((v) => v || p.area || "");
-        })
-        .catch(() => vigente && setBuscada("no"));
-    }, 500);
-
-    return () => {
-      vigente = false;
-      clearTimeout(espera);
-    };
-  }, [cedula, persona]);
 
   // El desplegable muestra "APP-022 — Nombre" para que se lea solo, pero al
   // Sheet van los campos separados.
@@ -193,15 +147,7 @@ export function RegistroPage() {
               alCambiar={setCedula}
               modoTeclado="numeric"
               marcador="Sin puntos ni comas"
-              ayuda={
-                buscada === "buscando"
-                  ? "Buscándote en el listado de personal…"
-                  : buscada === "si"
-                    ? "Te encontramos: revisa que los datos estén bien."
-                    : buscada === "sin-registro"
-                      ? "No apareces en el listado. Llena los datos a mano y sigue: no hay problema."
-                      : "Con ella se llenan solos los demás campos."
-              }
+              ayuda="Sin puntos ni comas."
             />
             <CampoTexto
               etiqueta="Nombre completo"

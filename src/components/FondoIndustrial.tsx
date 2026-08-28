@@ -10,9 +10,22 @@
  * Pesa unos 3 KB dentro del bundle, así que no le cuesta nada a un celular con
  * mala señal en campo — que era la razón para no meter una fotografía.
  *
- * Se recorta con `slice` en vez de encogerse: en celular se ve el centro del
- * dibujo a buen tamaño, en vez de una tira aplastada e ilegible.
+ * El alto es `max(9rem, 20vw)` y no un valor fijo, y ahí está el truco: 20vw
+ * es justo el alto que le corresponde al dibujo a lo ancho de la pantalla, así
+ * que en monitor grande la caja calza exacta y NO se recorta nada. La primera
+ * versión sí recortaba y en pantalla ancha le cortaba la cabeza a la torre.
+ *
+ * En celular manda el mínimo de 9rem, la caja queda más alta de lo que le toca
+ * y el recorte sale por los LADOS: se ve el centro —tanque, recipiente y
+ * tubería— a buen tamaño, en vez de los cinco equipos en una tira de 72 px que
+ * no se distingue. Por arriba no se recorta nunca.
+ *
+ * El viewBox lleva margen a los lados para que la proporción sea bien
+ * apaisada; si no, en un monitor de 1900 px la franja se volvía altísima.
  */
+
+const IZQ = -180;
+const ANCHO = 1560;
 
 export function FondoIndustrial({ variante = "portada" }: { variante?: "portada" | "sutil" }) {
   const portada = variante === "portada";
@@ -23,14 +36,14 @@ export function FondoIndustrial({ variante = "portada" }: { variante?: "portada"
       className={
         "pointer-events-none select-none overflow-hidden " +
         (portada
-          ? "absolute inset-x-0 bottom-0 h-44 text-ink-300 sm:h-56 lg:h-72"
-          : "fixed inset-x-0 bottom-0 -z-10 h-32 text-ink-200 sm:h-44")
+          ? "absolute inset-x-0 bottom-0 h-[max(9rem,20vw)] text-ink-300"
+          : "fixed inset-x-0 bottom-0 -z-10 h-[max(6rem,20vw)] text-ink-200")
       }
     >
       <svg
-        viewBox="0 0 1200 300"
+        viewBox={`${IZQ} 0 ${ANCHO} 300`}
         preserveAspectRatio="xMidYMax slice"
-        className="h-full w-full"
+        className="block h-full w-full"
         fill="none"
         stroke="currentColor"
         strokeWidth={2.5}
@@ -46,35 +59,41 @@ export function FondoIndustrial({ variante = "portada" }: { variante?: "portada"
             <stop offset="100%" stopColor="white" stopOpacity="1" />
           </linearGradient>
           <mask id="fi-mask">
-            <rect x="0" y="0" width="1200" height="300" fill="url(#fi-fade)" />
+            <rect x={IZQ} y="0" width={ANCHO} height="300" fill="url(#fi-fade)" />
           </mask>
         </defs>
 
         <g mask="url(#fi-mask)">
           {/* ---- Torre de destilación ------------------------------------ */}
+          {/* Tapa elipsoidal 2:1, que es plana: una semiesfera parecía una bala */}
           <path d="M90 88 A 30 15 0 0 1 150 88" />
           <path d="M90 88 V270 M150 88 V270" />
           <path d="M90 125 H150 M90 160 H150 M90 195 H150 M90 230 H150" />
           {/* Plataformas de acceso */}
           <path d="M78 118 H162 M78 190 H162" />
           <path d="M78 118 V108 M162 118 V108 M78 190 V180 M162 190 V180" />
-          {/* Escalera de acceso, del suelo a la plataforma alta */}
+          {/* Escalera, del suelo a la plataforma alta */}
           <path d="M152 270 V190 M164 270 V190" />
           <path d="M152 206 H164 M152 222 H164 M152 238 H164 M152 254 H164" />
 
           {/* ---- Tanque de almacenamiento (API 653) ---------------------- */}
           <path d="M215 270 V152 M435 270 V152" />
+          {/* El borde superior del casco. Sin él, el techo arrancaba de las
+              esquinas y el tanque se leía como una casa con techo a dos aguas. */}
           <path d="M215 152 H435" />
-          <path d="M215 152 L325 128 L435 152" />
-          <circle cx="325" cy="124" r="5" />
+          {/* Techo abombado, no un triángulo */}
+          <path d="M215 152 Q325 118 435 152" />
+          <circle cx="325" cy="134" r="4" />
           {/* Anillos rigidizadores */}
           <path d="M215 190 H435 M215 230 H435" />
           {/* Escalera helicoidal, insinuada por el lado derecho */}
           <path d="M449 268 L437 156" />
           <path d="M441 268 L429 156" />
           <path d="M443 250 L436 249 M446 224 L439 223 M448 198 L441 197" />
-          {/* Boca de visita */}
-          <path d="M232 270 V244 H252 V270" />
+          {/* Boca de visita —redonda, como en la realidad— y una boquilla de
+              fondo. Antes había un rectángulo que parecía puerta de granero. */}
+          <circle cx="248" cy="250" r="9" />
+          <path d="M215 258 H197 M197 251 V265" />
 
           {/* ---- Recipiente a presión horizontal (API 510) --------------- */}
           <path d="M512 176 H676 M512 236 H676" />
@@ -101,7 +120,7 @@ export function FondoIndustrial({ variante = "portada" }: { variante?: "portada"
           <path d="M1125 234 L1134 270 M1106 250 L1111 270" />
 
           {/* ---- Suelo ---------------------------------------------------- */}
-          <path d="M0 270 H1200" strokeWidth={2} />
+          <path d={`M${IZQ} 270 H${IZQ + ANCHO}`} strokeWidth={2} />
         </g>
       </svg>
     </div>

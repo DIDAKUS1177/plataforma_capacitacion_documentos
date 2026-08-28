@@ -88,14 +88,17 @@ export function CampoTexto({
   tipo = "text",
   marcador,
   modoTeclado,
+  autoCompletar,
 }: {
   etiqueta: string;
   ayuda?: string;
   valor: string;
   alCambiar: (v: string) => void;
-  tipo?: "text" | "email";
+  tipo?: "text" | "email" | "password";
   marcador?: string;
   modoTeclado?: "numeric";
+  /** Para que el gestor de contraseñas del celular ofrezca guardar la entrada. */
+  autoCompletar?: "username" | "current-password";
 }) {
   return (
     <Etiqueta etiqueta={etiqueta} ayuda={ayuda}>
@@ -104,6 +107,7 @@ export function CampoTexto({
         value={valor}
         placeholder={marcador}
         inputMode={modoTeclado}
+        autoComplete={autoCompletar}
         onChange={(e) => alCambiar(e.target.value)}
         className={CLASES_CONTROL}
       />

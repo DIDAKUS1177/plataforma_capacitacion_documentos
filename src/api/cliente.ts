@@ -38,9 +38,12 @@ export interface EstadoReporte {
   respondido: boolean;
 }
 
-/** Lo que devuelve el listado de personal para autocompletar el registro. */
+/** Lo que devuelve la entrada. `encontrada: false` = correo y cédula no casan. */
 export interface Persona {
   encontrada: boolean;
+  /** El texto que se le muestra a la persona cuando no coincide. */
+  mensaje?: string;
+  cedula?: string;
   nombre?: string;
   correo?: string;
   cargo?: string;
@@ -111,8 +114,13 @@ export function obtenerConfig(): Promise<ConfigServidor> {
   return pedir<ConfigServidor>("/api/config");
 }
 
-export function buscarPersona(cedula: string): Promise<Persona> {
-  return pedir<Persona>(`/api/persona?cedula=${encodeURIComponent(cedula)}`);
+/**
+ * Entrar con correo + cédula. Va por POST y no por GET a propósito: una cédula
+ * en la barra de direcciones queda en el historial del navegador y en los logs.
+ */
+export async function entrarConCedula(correo: string, cedula: string): Promise<Persona> {
+  const r = await enviar<Persona>("/api/entrar", { correo, cedula });
+  return r.datos as Persona;
 }
 
 export function obtenerHistorial(cedula: string): Promise<Historial> {

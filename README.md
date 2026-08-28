@@ -16,9 +16,14 @@ se pregunta en el registro y no parte el contenido en cursos distintos.
 Entrar → Formato → Presentación → Instructivo → Puntos clave → Evaluación → Constancia
 ```
 
-**Se entra escribiendo la cédula**, y con eso la plataforma trae del listado de
-personal el nombre, el correo, el cargo y el área. Por eso el primer paso del
-curso ya no pide seis datos: solo el formato sobre el que se capacita.
+Los 145 del listado tienen correo y cédula, sin repetidos ni vacíos, así que
+todos pueden entrar. 142 son `@ademincol.com.co`; los 3 restantes son aprendices
+del SENA con Gmail, y por eso **la entrada no exige dominio corporativo**.
+
+**Se entra con el correo y la cédula**: el correo es el usuario y la cédula la
+clave. Con eso la plataforma trae del listado de personal el nombre, el cargo y
+el área, y por eso el primer paso del curso ya no pide seis datos: solo el
+formato sobre el que se capacita.
 
 Ese primer paso **se guarda de una**, antes de que vea nada, así queda rastro de
 quien empieza y no termina; y al llegar a la constancia no hay que teclear nada.
@@ -64,7 +69,7 @@ Inspector (celular)
 | `POST /api/mejora` | Radica la falla o la sugerencia y devuelve el número |
 | `GET /api/verificar` | Comprueba una constancia por su código. Público, datos mínimos |
 | `POST /api/consulta` | Estado de un reporte del buzón. Pide número **y** correo |
-| `GET /api/persona` | Datos del listado de personal, para autocompletar el registro |
+| `POST /api/entrar` | Correo + cédula → los datos de esa persona. Los dos tienen que casar |
 | `GET /api/historial` | Qué capacitaciones lleva una cédula. Solo formación |
 | `POST /api/notificar` | Manda los correos de las respuestas nuevas. Protegido con clave |
 
@@ -81,7 +86,7 @@ src/lib/aplicaciones.tsx      Catálogo del Listado Maestro, cargado una sola ve
 src/lib/sesion.tsx            Quién entró. sessionStorage, no localStorage
 src/lib/progreso.tsx          Qué pasos hizo y si aprobó
 shared/validacion.ts          Validación compartida cliente ↔ servidor
-functions/api/                Las cinco funciones y sus utilidades
+functions/api/                Las funciones del servidor y sus utilidades
 scripts/init_sheet.py         Crea/completa las hojas y encabezados del Sheet
 scripts/generar_imagenes.py   Rehace las imágenes del material
 ```
@@ -154,32 +159,37 @@ nombre de alguien. El buzón queda abierto a propósito:
 Quien llega directo al buzón ve un botón **Entrar** en la cabecera, por si de
 paso quiere capacitarse.
 
-### Sobre entrar con la cédula
+### Sobre la entrada
 
 Hay que decirlo sin rodeos: **esto identifica, no autentica.** La cédula no es un
 secreto — está en los formatos en papel, en RR. HH. y la saben los compañeros.
-Fue una decisión explícita del usuario, tomada con esa salvedad sobre la mesa.
+Pedirla junto con el correo sube bastante el listón frente a pedir solo la
+cédula, pero no la convierte en una contraseña.
 
 Lo que sostiene el valor de la constancia sigue siendo la declaración que se
 acepta al final, igual que la firma del F-SIG-19 en papel que reemplaza. La
 plataforma no empeora nada respecto de lo que había; lo que agrega es rastro:
 fecha, hora, resultado y un código verificable.
 
-Lo que sí se hizo para acotar el daño:
+Lo que sí se hizo:
 
-- **Confirmación de identidad al entrar.** Un dígito mal tecleado cae en la
-  cédula de otro compañero; sin ese paso la constancia saldría a nombre ajeno.
-- **La constancia va al correo del listado**, no a uno escrito a mano. Si alguien
-  se hace pasar por otro, al suplantado le llega el correo.
+- **Los dos campos tienen que casar en la MISMA fila** de `personal`. No basta
+  con que ambos existan por separado.
+- **Un solo mensaje de error** para los tres fallos —correo que no existe, cédula
+  que no coincide, o ninguno—, para no confirmar qué correos están en el listado.
+- **Se eliminó `GET /api/persona?cedula=`**, que devolvía nombre y correo con
+  solo la cédula: cualquiera podía recorrer números y sacar el directorio.
+- **La constancia va al correo del listado**, nunca a uno escrito a mano.
 - **`/api/historial` devuelve únicamente formación**: curso, formato, fecha,
   resultado y el código. Ni correo, ni cargo, ni teléfono.
 - **La sesión vive en `sessionStorage`.** En una tablet compartida en campo,
   cerrar el navegador basta para salir; Salir además recarga la página para que
   el siguiente no herede el progreso del anterior.
 
-Si algún día se quiere identidad de verdad, lo indicado es un código de seis
-dígitos al correo corporativo (los 145 lo tienen). El cambio sería pedir el
-código antes de llamar al endpoint; `historial.ts` no habría que tocarlo.
+Lo que **no** hace, y conviene saberlo: no resiste fuerza bruta. Una cédula son
+de 7 a 10 dígitos y no hay bloqueo por intentos fallidos. Si algún día eso
+importa, lo indicado es un código de seis dígitos al correo; el cambio sería
+pedirlo después de validar la cédula, sin tocar el resto.
 
 ### El ciclo del buzón
 
