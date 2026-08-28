@@ -70,6 +70,7 @@ Inspector (celular)
 | `GET /api/verificar` | Comprueba una constancia por su código. Público, datos mínimos |
 | `POST /api/consulta` | Estado de un reporte del buzón. Pide número **y** correo |
 | `POST /api/entrar` | Correo + cédula → los datos de esa persona. Los dos tienen que casar |
+| `POST /api/bases` | Todo lo que guarda la plataforma. Solo para `CEDULAS_ADMIN` |
 | `GET /api/historial` | Qué capacitaciones lleva una cédula. Solo formación |
 | `POST /api/notificar` | Manda los correos de las respuestas nuevas. Protegido con clave |
 
@@ -104,6 +105,7 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 | `/capacitacion/constancia` | Se abre al aprobar |
 | `/reportar?app=APP-022` | Buzón, con la app precargada. **Sin sesión** |
 | `/mis-cursos` | Qué capacitaciones lleva una persona |
+| `/bases` | Todas las hojas, de solo lectura. Solo la ve quien esté en `CEDULAS_ADMIN` |
 | `/mi-reporte?id=MEJ-0007` | Consultar en qué quedó lo reportado. **Sin sesión** |
 | `/verificar/<id>` | Lo que abre el QR. Público y fuera del curso |
 
@@ -190,6 +192,36 @@ Lo que **no** hace, y conviene saberlo: no resiste fuerza bruta. Una cédula son
 de 7 a 10 dígitos y no hay bloqueo por intentos fallidos. Si algún día eso
 importa, lo indicado es un código de seis dígitos al correo; el cambio sería
 pedirlo después de validar la cédula, sin tocar el resto.
+
+### La pestaña Bases
+
+Muestra en un solo lugar y **de solo lectura** todo lo que guarda la plataforma:
+resumen y cobertura, constancias, inicios, buzón, quiénes faltan y el listado de
+personal. Cada tabla tiene buscador y botón de CSV.
+
+**No hay ningún enlace al Sheet**, a propósito: esta pantalla no puede volverse
+la puerta de entrada para editar o borrar las bases. Para escribir se abre el
+Sheet a mano, sabiendo lo que se hace.
+
+Quién la ve sale de la variable `CEDULAS_ADMIN` (cédulas separadas por coma), en
+el servidor. **No puede ir en el código del navegador**: la cédula es la mitad
+de la credencial de entrada, así que publicarla en el bundle sería regalarla.
+
+Esconder la pestaña no protege nada — cualquiera puede fabricarse una sesión
+desde la consola del navegador, y de hecho se probó. Lo que protege es que
+`POST /api/bases` vuelva a verificar, en cada petición y sin creerle nada al
+cliente:
+
+1. que el correo y la cédula casen en la misma fila de `personal`;
+2. que esa cédula esté en `CEDULAS_ADMIN`;
+3. que, si `CLAVE_ADMIN` está configurada, venga también esa clave.
+
+Cuando algo falla responde **404 y no 403**: un 403 confirmaría que la pestaña
+existe y que esa cédula es de un administrador.
+
+`CLAVE_ADMIN` viene vacía. Ponerla es una variable, no un cambio de código, y
+vale la pena si algún día preocupa que la cédula no sea un secreto y esa
+pantalla muestre el directorio completo.
 
 ### El ciclo del buzón
 

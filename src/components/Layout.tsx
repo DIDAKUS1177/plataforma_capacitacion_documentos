@@ -4,13 +4,23 @@
  * pestañas subrayadas en brand-600 cuando están activas.
  *
  * Dos niveles:
- *   1. Las cuatro pestañas: Capacitación · Mis cursos · Reportar · Mi reporte.
+ *   1. Las pestañas: Capacitación · Mis cursos · Reportar · Mi reporte, y
+ *      Bases para quien esté en `CEDULAS_ADMIN`.
  *   2. Los pasos del curso, que se van abriendo a medida que se avanza.
  */
 
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Award, GraduationCap, Lightbulb, Lock, LogIn, LogOut, Search } from "lucide-react";
+import {
+  Award,
+  Database,
+  GraduationCap,
+  Lightbulb,
+  Lock,
+  LogIn,
+  LogOut,
+  Search,
+} from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import { useSesion } from "../lib/sesion";
 import { FondoIndustrial } from "./FondoIndustrial";
@@ -121,6 +131,9 @@ export function Layout() {
             <PestanaPrincipal a="/mis-cursos" icono={Award} texto="Mis cursos" />
             <PestanaPrincipal a="/reportar" icono={Lightbulb} texto="Reportar" />
             <PestanaPrincipal a="/mi-reporte" icono={Search} texto="Mi reporte" />
+            {persona?.esAdmin && (
+              <PestanaPrincipal a="/bases" icono={Database} texto="Bases" />
+            )}
           </div>
         </nav>
 

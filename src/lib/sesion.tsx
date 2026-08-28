@@ -29,6 +29,8 @@ export interface SesionPersona {
   correo: string;
   cargo: string;
   area: string;
+  /** Si ve la pestaña Bases. Lo dice el servidor al entrar. */
+  esAdmin: boolean;
 }
 
 export type Sesion = SesionPersona | { modo: "manual" } | null;
@@ -74,6 +76,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       correo: p.correo || "",
       cargo: p.cargo || "",
       area: p.area || "",
+      esAdmin: !!p.esAdmin,
     };
     setSesion(nueva);
     guardar(nueva);

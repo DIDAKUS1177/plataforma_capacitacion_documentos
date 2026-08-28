@@ -22,6 +22,7 @@ import type { Env } from "./_lib/entorno";
 import { leerValores } from "./_lib/sheets";
 import { fallaServidor, malaPeticion, ok } from "./_lib/http";
 import { titulo } from "./_lib/texto";
+import { esCedulaAdmin } from "./_lib/admin";
 
 const HOJA = "personal";
 
@@ -73,6 +74,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     return ok({
       encontrada: true,
       cedula,
+      // Solo para decidir si se pinta la pestaña. No da acceso a nada: quien
+      // se lo ponga a mano en la sesión verá la pestaña y un 404 detrás.
+      esAdmin: esCedulaAdmin(env, cedula),
       nombre: titulo(fila[COL.nombre] || ""),
       correo: (fila[COL.correo] || "").trim().toLowerCase(),
       cargo: titulo(fila[COL.cargo] || ""),

@@ -43,6 +43,23 @@ export interface Env {
   EXIGE_FIRMA?: string;
   /** Carpeta de Drive donde se guardan las firmas. Vacío = no se guardan. */
   CARPETA_FIRMAS_ID?: string;
+  /**
+   * Cédulas que ven la pestaña Bases, separadas por coma. Vacío = nadie la ve
+   * y el endpoint responde como si no existiera.
+   *
+   * Va en el servidor y no en el código del navegador a propósito: la cédula es
+   * la mitad de la credencial de entrada, así que publicarla en el bundle sería
+   * regalarla.
+   */
+  CEDULAS_ADMIN?: string;
+  /**
+   * Segunda clave opcional para la pestaña Bases. Si está puesta, además del
+   * correo y la cédula hay que escribirla. Vacío = basta con la sesión.
+   *
+   * Existe porque la cédula no es un secreto y esa pestaña muestra el
+   * directorio completo. Ponerla es cambiar una variable, no tocar código.
+   */
+  CLAVE_ADMIN?: string;
 }
 
 /** Falla temprano y con mensaje claro si falta configuración. */

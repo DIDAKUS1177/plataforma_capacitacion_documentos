@@ -12,6 +12,7 @@ import { ConstanciaPage } from "./pages/ConstanciaPage";
 import { ReportarPage } from "./pages/ReportarPage";
 import { ConsultaPage } from "./pages/ConsultaPage";
 import { HistorialPage } from "./pages/HistorialPage";
+import { BasesPage } from "./pages/BasesPage";
 import { VerificarPage } from "./pages/VerificarPage";
 
 /**
@@ -24,6 +25,17 @@ function ExigeSesion() {
   if (!sesion) {
     return <Navigate to="/entrar" replace state={{ desde: pathname + search }} />;
   }
+  return <Outlet />;
+}
+
+/**
+ * La pestaña Bases. Esconderla no protege nada —cualquiera puede fabricarse una
+ * sesión desde la consola—; lo que protege es que /api/bases vuelva a verificar
+ * correo y cédula contra la hoja `personal` en cada petición.
+ */
+function ExigeAdmin() {
+  const { persona } = useSesion();
+  if (!persona?.esAdmin) return <Navigate to="/capacitacion" replace />;
   return <Outlet />;
 }
 
@@ -60,6 +72,10 @@ export default function App() {
                   <Route path="/capacitacion/constancia" element={<ConstanciaPage />} />
 
                   <Route path="/mis-cursos" element={<HistorialPage />} />
+
+                  <Route element={<ExigeAdmin />}>
+                    <Route path="/bases" element={<BasesPage />} />
+                  </Route>
                 </Route>
 
                 <Route path="*" element={<Navigate to="/capacitacion" replace />} />

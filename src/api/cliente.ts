@@ -44,6 +44,8 @@ export interface Persona {
   /** El texto que se le muestra a la persona cuando no coincide. */
   mensaje?: string;
   cedula?: string;
+  /** Si ve la pestaña Bases. Lo decide el servidor, no el navegador. */
+  esAdmin?: boolean;
   nombre?: string;
   correo?: string;
   cargo?: string;
@@ -153,4 +155,52 @@ export function verificarConstancia(id: string): Promise<Verificacion> {
 
 export function registrarMejora(datos: DatosMejora) {
   return enviar<{ id: string; correoEnviado: boolean }>("/api/mejora", datos);
+}
+
+/** Lo que muestra la pestaña Bases. Todo de solo lectura. */
+export interface Bases {
+  generado: string;
+  resumen: {
+    personas: number;
+    capacitadas: number;
+    faltan: number;
+    constancias: number;
+    empezadasSinTerminar: number;
+    respuestasEvaluacion: number;
+    opsPersonas: number;
+    opsCapacitadas: number;
+  };
+  areas: { area: string; personas: number; capacitadas: number }[];
+  constancias: {
+    fecha: string; nombre: string; cedula: string; correo: string; cargo: string;
+    areaUn: string; formato: string; resultado: string; aprobado: boolean;
+    minutos: string; version: string; id: string;
+  }[];
+  inicios: {
+    fecha: string; nombre: string; cedula: string; correo: string;
+    formato: string; termino: boolean;
+  }[];
+  mejoras: {
+    id: string; fecha: string; aplicacion: string; tipo: string; criticidad: string;
+    descripcion: string; nombre: string; correo: string; whatsapp: string;
+    estado: string; responsable: string; respuesta: string; fechaRespuesta: string;
+    notificadoEn: string;
+  }[];
+  pendientes: {
+    nombre: string; cedula: string; correo: string; cargo: string;
+    area: string; lugar: string; empezo: boolean;
+  }[];
+  personal: {
+    cedula: string; nombre: string; correo: string; cargo: string;
+    categoria: string; area: string; lugar: string; capacitada: boolean;
+  }[];
+}
+
+/**
+ * Trae todo lo que guarda la plataforma. Manda otra vez correo y cédula porque
+ * el servidor no le cree a la sesión del navegador: la vuelve a verificar.
+ */
+export async function obtenerBases(correo: string, cedula: string): Promise<Bases> {
+  const r = await enviar<Bases>("/api/bases", { correo, cedula });
+  return r.datos as Bases;
 }
