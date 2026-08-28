@@ -13,12 +13,18 @@ entre ellas, lo que cambia es el formato que se diligencia. Por eso el formato
 se pregunta en el registro y no parte el contenido en cursos distintos.
 
 ```
-Registro → Presentación → Instructivo → Puntos clave → Evaluación → Constancia
+Entrar → Formato → Presentación → Instructivo → Puntos clave → Evaluación → Constancia
 ```
 
-El **registro va primero y se guarda de una**, antes de que vea nada: así queda
-rastro de quien empieza y no termina, y al llegar a la constancia ya no hay que
-teclear nada.
+**Se entra escribiendo la cédula**, y con eso la plataforma trae del listado de
+personal el nombre, el correo, el cargo y el área. Por eso el primer paso del
+curso ya no pide seis datos: solo el formato sobre el que se capacita.
+
+Ese primer paso **se guarda de una**, antes de que vea nada, así queda rastro de
+quien empieza y no termina; y al llegar a la constancia no hay que teclear nada.
+
+Quien no aparece en el listado entra sin registro y escribe sus datos a mano. Un
+contratista que llega hoy tiene que poder capacitarse hoy.
 
 Todo se guarda en Google Sheets.
 
@@ -68,11 +74,12 @@ Inspector (celular)
 src/contenido/curso.ts       ← EL ÚNICO ARCHIVO QUE SE EDITA para cambiar el curso
 material/                     Los PDF y el PPTX de origen (ver material/README.md)
 public/material/              El material convertido a imágenes, con su indice.json
-src/pages/                    Registro · Material · PuntosClave · Evaluación · Constancia · Reportar
+src/pages/                    Entrar · Registro · Material · PuntosClave · Evaluación · Constancia · Reportar
 src/components/Visor.tsx      Pasa páginas del material, una a la vez
 src/components/Layout.tsx     Dos niveles de pestañas y el avance
 src/lib/aplicaciones.tsx      Catálogo del Listado Maestro, cargado una sola vez
-src/lib/progreso.tsx          Quién es, qué pasos hizo y si aprobó
+src/lib/sesion.tsx            Quién entró. sessionStorage, no localStorage
+src/lib/progreso.tsx          Qué pasos hizo y si aprobó
 shared/validacion.ts          Validación compartida cliente ↔ servidor
 functions/api/                Las cinco funciones y sus utilidades
 scripts/init_sheet.py         Crea/completa las hojas y encabezados del Sheet
@@ -83,7 +90,8 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 
 | Ruta | Qué es |
 |---|---|
-| `/capacitacion` | Registro. Sin esto no se abre nada más |
+| `/entrar` | Se escribe la cédula y se confirma la identidad. Sin sesión, todo lo demás redirige aquí |
+| `/capacitacion` | Escoger el formato. Sin esto no se abre nada más |
 | `/capacitacion/diapositivas` | Las 16 diapositivas, una a la vez |
 | `/capacitacion/manual` | Las 19 páginas del IT-OPE-C-12 |
 | `/capacitacion/puntos-clave` | El repaso de lo que se evalúa |
@@ -97,8 +105,8 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 ### El listado de personal
 
 `scripts/importar_personal.py` carga el Excel de RR. HH. a la hoja `personal`
-(145 personas). Se usa para dos cosas: autocompletar el registro a partir de la
-cédula, y saber quién falta por capacitarse.
+(145 personas). Se usa para tres cosas: la entrada a la plataforma, llenar los
+datos del registro, y saber quién falta por capacitarse.
 
 ```bash
 python scripts/importar_personal.py <service-account.json> "Base personal activo.xlsx"
@@ -133,11 +141,26 @@ que no les corresponde.
 
 ### Sobre entrar con la cédula
 
-`/mis-cursos` pide solo la cédula. Fue una decisión explícita del usuario, con
-la salvedad dicha: **la cédula no es un secreto** — está en los formatos en
-papel, en RR. HH. y la saben los compañeros. Por eso ese endpoint devuelve
-únicamente formación: curso, formato, fecha, resultado y el código de la
-constancia. Ni correo, ni cargo, ni teléfono.
+Hay que decirlo sin rodeos: **esto identifica, no autentica.** La cédula no es un
+secreto — está en los formatos en papel, en RR. HH. y la saben los compañeros.
+Fue una decisión explícita del usuario, tomada con esa salvedad sobre la mesa.
+
+Lo que sostiene el valor de la constancia sigue siendo la declaración que se
+acepta al final, igual que la firma del F-SIG-19 en papel que reemplaza. La
+plataforma no empeora nada respecto de lo que había; lo que agrega es rastro:
+fecha, hora, resultado y un código verificable.
+
+Lo que sí se hizo para acotar el daño:
+
+- **Confirmación de identidad al entrar.** Un dígito mal tecleado cae en la
+  cédula de otro compañero; sin ese paso la constancia saldría a nombre ajeno.
+- **La constancia va al correo del listado**, no a uno escrito a mano. Si alguien
+  se hace pasar por otro, al suplantado le llega el correo.
+- **`/api/historial` devuelve únicamente formación**: curso, formato, fecha,
+  resultado y el código. Ni correo, ni cargo, ni teléfono.
+- **La sesión vive en `sessionStorage`.** En una tablet compartida en campo,
+  cerrar el navegador basta para salir; Salir además recarga la página para que
+  el siguiente no herede el progreso del anterior.
 
 Si algún día se quiere identidad de verdad, lo indicado es un código de seis
 dígitos al correo corporativo (los 145 lo tienen). El cambio sería pedir el
