@@ -111,6 +111,26 @@ corporativo.
 Quien no esté en el listado **puede capacitarse igual**, llenando los datos a
 mano: un contratista nuevo tiene que poder hacerlo el mismo día que llega.
 
+### Tablero de cobertura
+
+```bash
+python scripts/tablero_cobertura.py <service-account.json>
+```
+
+Crea las hojas `cobertura` y `pendientes` en el mismo Sheet. Los números son
+**fórmulas**, no valores copiados: se actualizan solos a medida que la gente se
+capacita. Solo hay que volver a correr el script si RR. HH. agrega un área
+nueva, para que aparezca su fila.
+
+Vive en el Sheet y no en la plataforma a propósito: son datos de gestión —quién
+falta, con nombre y correo— y la plataforma la abre cualquiera que tenga el
+enlace.
+
+Mide dos coberturas, y la segunda es la que importa: **todo el personal** (145)
+y **solo OPERACIONES** (102). Contabilidad o los conductores no ejecutan
+inspecciones, así que contarlos en el denominador solo hace ver peor un número
+que no les corresponde.
+
 ### Sobre entrar con la cédula
 
 `/mis-cursos` pide solo la cédula. Fue una decisión explícita del usuario, con
