@@ -90,16 +90,16 @@ scripts/generar_imagenes.py   Rehace las imágenes del material
 
 | Ruta | Qué es |
 |---|---|
-| `/entrar` | Se escribe la cédula y se confirma la identidad. Sin sesión, todo lo demás redirige aquí |
+| `/entrar` | Se escribe la cédula y se confirma la identidad |
 | `/capacitacion` | Escoger el formato. Sin esto no se abre nada más |
 | `/capacitacion/diapositivas` | Las 16 diapositivas, una a la vez |
 | `/capacitacion/manual` | Las 19 páginas del IT-OPE-C-12 |
 | `/capacitacion/puntos-clave` | El repaso de lo que se evalúa |
 | `/capacitacion/evaluacion` | Se abre al recorrer todo el material |
 | `/capacitacion/constancia` | Se abre al aprobar |
-| `/reportar?app=APP-022` | Buzón, con la app precargada |
+| `/reportar?app=APP-022` | Buzón, con la app precargada. **Sin sesión** |
 | `/mis-cursos` | Qué capacitaciones lleva una persona |
-| `/mi-reporte?id=MEJ-0007` | Consultar en qué quedó lo reportado |
+| `/mi-reporte?id=MEJ-0007` | Consultar en qué quedó lo reportado. **Sin sesión** |
 | `/verificar/<id>` | Lo que abre el QR. Público y fuera del curso |
 
 ### El listado de personal
@@ -138,6 +138,21 @@ Mide dos coberturas, y la segunda es la que importa: **todo el personal** (145)
 y **solo OPERACIONES** (102). Contabilidad o los conductores no ejecutan
 inspecciones, así que contarlos en el denominador solo hace ver peor un número
 que no les corresponde.
+
+### Qué pide sesión y qué no
+
+Solo **Capacitación** y **Mis cursos**, que son las que dejan un registro a
+nombre de alguien. El buzón queda abierto a propósito:
+
+- El acuse por correo trae el enlace `/mi-reporte?id=MEJ-0007`. Con login de por
+  medio ese enlace deja de servir.
+- Los enlaces `/reportar?app=APP-022` van pegados en la descripción de cada app
+  de AppSheet. Son una puerta de una pulsación; un muro les quita el sentido.
+- Un buzón de quejas con muro de entrada recibe menos quejas, y las que más
+  sirven son justo las que la gente no manda si siente que queda marcada.
+
+Quien llega directo al buzón ve un botón **Entrar** en la cabecera, por si de
+paso quiere capacitarse.
 
 ### Sobre entrar con la cédula
 

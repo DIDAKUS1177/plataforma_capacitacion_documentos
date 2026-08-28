@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { ProveedorProgreso } from "./lib/progreso";
 import { ProveedorAplicaciones } from "./lib/aplicaciones";
@@ -15,17 +15,16 @@ import { HistorialPage } from "./pages/HistorialPage";
 import { VerificarPage } from "./pages/VerificarPage";
 
 /**
- * Sin sesión no se ve la aplicación: se manda a identificarse y se recuerda a
- * dónde iba, para que un enlace directo a /mi-reporte no termine dejando a la
- * persona en la capacitación.
+ * Manda a identificarse y recuerda a dónde iba, para que un enlace directo no
+ * termine dejando a la persona en otra pantalla.
  */
-function ExigeSesion({ children }: { children: React.ReactNode }) {
+function ExigeSesion() {
   const { sesion } = useSesion();
   const { pathname, search } = useLocation();
   if (!sesion) {
     return <Navigate to="/entrar" replace state={{ desde: pathname + search }} />;
   }
-  return <>{children}</>;
+  return <Outlet />;
 }
 
 export default function App() {
@@ -40,31 +39,28 @@ export default function App() {
               <Route path="/verificar/:id" element={<VerificarPage />} />
               <Route path="/entrar" element={<EntrarPage />} />
 
-              <Route
-                element={
-                  <ExigeSesion>
-                    <Layout />
-                  </ExigeSesion>
-                }
-              >
-                <Route path="/" element={<Navigate to="/capacitacion" replace />} />
-
-                {/* Pestana 1 - la capacitacion, en orden */}
-                <Route path="/capacitacion" element={<RegistroPage />} />
-                <Route path="/capacitacion/diapositivas" element={<DiapositivasPage />} />
-                <Route path="/capacitacion/manual" element={<ManualPage />} />
-                <Route path="/capacitacion/puntos-clave" element={<PuntosClavePage />} />
-                <Route path="/capacitacion/evaluacion" element={<EvaluacionPage />} />
-                <Route path="/capacitacion/constancia" element={<ConstanciaPage />} />
-
-                {/* Pestana 2 - buzon de mejoras */}
+              <Route element={<Layout />}>
+                {/* El buzon NO pide sesion, a proposito. El acuse por correo
+                    trae el enlace de /mi-reporte, y los enlaces /reportar?app=
+                    van pegados en la descripcion de cada app de AppSheet: si
+                    caen en una pantalla de cedula, dejan de servir. Y un buzon
+                    de quejas con muro de entrada recibe menos quejas. */}
                 <Route path="/reportar" element={<ReportarPage />} />
-
-                {/* Pestana 3 - que capacitaciones lleva */}
-                <Route path="/mis-cursos" element={<HistorialPage />} />
-
-                {/* Pestana 4 - consultar en que quedo lo reportado */}
                 <Route path="/mi-reporte" element={<ConsultaPage />} />
+
+                {/* Lo que si deja registro a nombre de alguien */}
+                <Route element={<ExigeSesion />}>
+                  <Route path="/" element={<Navigate to="/capacitacion" replace />} />
+
+                  <Route path="/capacitacion" element={<RegistroPage />} />
+                  <Route path="/capacitacion/diapositivas" element={<DiapositivasPage />} />
+                  <Route path="/capacitacion/manual" element={<ManualPage />} />
+                  <Route path="/capacitacion/puntos-clave" element={<PuntosClavePage />} />
+                  <Route path="/capacitacion/evaluacion" element={<EvaluacionPage />} />
+                  <Route path="/capacitacion/constancia" element={<ConstanciaPage />} />
+
+                  <Route path="/mis-cursos" element={<HistorialPage />} />
+                </Route>
 
                 <Route path="*" element={<Navigate to="/capacitacion" replace />} />
               </Route>

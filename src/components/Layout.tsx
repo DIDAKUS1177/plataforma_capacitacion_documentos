@@ -10,14 +10,15 @@
 
 import { useEffect } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { Award, GraduationCap, Lightbulb, Lock, LogOut, Search } from "lucide-react";
+import { Award, GraduationCap, Lightbulb, Lock, LogIn, LogOut, Search } from "lucide-react";
 import { useProgreso } from "../lib/progreso";
 import { useSesion } from "../lib/sesion";
+import { FondoIndustrial } from "./FondoIndustrial";
 import logo from "../assets/logo-demincol.png";
 
 export function Layout() {
   const progreso = useProgreso();
-  const { persona, salir } = useSesion();
+  const { sesion, persona, salir } = useSesion();
   const { pathname } = useLocation();
 
   // Salir recarga la página en vez de navegar. El progreso del curso vive en
@@ -62,6 +63,10 @@ export function Layout() {
 
   return (
     <div className="flex min-h-full flex-col">
+      {/* Muy tenue y fijo al borde inferior: se asoma alrededor de las tarjetas
+          sin competir nunca con el texto que hay dentro de ellas. */}
+      <FondoIndustrial variante="sutil" />
+
       {/* Branding, pestañas y barra de progreso van dentro de la MISMA cabecera
           pegajosa: con `top` fijos en cada bloque, el alto cambiante los
           solapaba. */}
@@ -74,22 +79,39 @@ export function Layout() {
                 Capacitación de inspectores
               </p>
               <p className="truncate text-xs text-ink-400">
-                {persona?.nombre || registro?.nombre || "Entraste sin registro"}
+                {persona?.nombre ||
+                  registro?.nombre ||
+                  (sesion ? "Entraste sin registro" : "Formación y buzón de mejoras")}
               </p>
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={cerrar}
-            title="Salir"
-            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-300 px-2.5
-                       py-1.5 text-xs font-medium text-ink-600 transition-colors
-                       hover:bg-ink-100 hover:text-ink-900"
-          >
-            <LogOut size={14} />
-            <span className="hidden sm:inline">Salir</span>
-          </button>
+          {sesion ? (
+            <button
+              type="button"
+              onClick={cerrar}
+              title="Salir"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-300 px-2.5
+                         py-1.5 text-xs font-medium text-ink-600 transition-colors
+                         hover:bg-ink-100 hover:text-ink-900"
+            >
+              <LogOut size={14} />
+              <span className="hidden sm:inline">Salir</span>
+            </button>
+          ) : (
+            /* Quien llega directo al buzón no tiene sesión, y puede querer
+               capacitarse sin buscar por dónde. */
+            <NavLink
+              to="/entrar"
+              title="Entrar"
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-ink-300 px-2.5
+                         py-1.5 text-xs font-medium text-ink-600 transition-colors
+                         hover:bg-ink-100 hover:text-ink-900"
+            >
+              <LogIn size={14} />
+              <span className="hidden sm:inline">Entrar</span>
+            </NavLink>
+          )}
         </div>
 
         {/* Nivel 1 — las pestañas principales */}
