@@ -219,9 +219,28 @@ cliente:
 Cuando algo falla responde **404 y no 403**: un 403 confirmaría que la pestaña
 existe y que esa cédula es de un administrador.
 
-`CLAVE_ADMIN` viene vacía. Ponerla es una variable, no un cambio de código, y
-vale la pena si algún día preocupa que la cédula no sea un secreto y esa
-pantalla muestre el directorio completo.
+`CLAVE_ADMIN` **está configurada** (2026-08-29). Al abrir la pestaña se pide, y
+solo entonces: para hacer el curso no hace falta. Se guarda **solo en memoria**,
+así que moverse entre pestañas no la vuelve a pedir pero recargar la página sí,
+y nunca queda escrita en el navegador.
+
+El servidor responde 404 tanto si la clave está mal como si la persona no es
+admin. El texto "La clave no es correcta" lo pone la pantalla, que ya sabe que
+quien está ahí sí es admin — el servidor sigue sin decir cuál de las dos cosas
+falló.
+
+En `.dev.vars` (desarrollo) va **otra** clave a propósito: si se filtra la de
+desarrollo no compromete producción.
+
+Para cambiarla o quitarla:
+
+```bash
+echo "LA-NUEVA" | npx wrangler pages secret put CLAVE_ADMIN --project-name adc-capacitacion
+npx wrangler pages secret delete CLAVE_ADMIN --project-name adc-capacitacion
+```
+
+Sin la variable, la pestaña vuelve a pedir solo correo y cédula. El código
+contempla las dos situaciones.
 
 ### El ciclo del buzón
 

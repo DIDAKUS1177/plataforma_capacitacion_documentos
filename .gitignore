@@ -21,5 +21,7 @@ F-SIG-19*
 # Token de Gmail generado por scripts/autorizar_gmail.py
 gmail-token.local.json
 
-# Hoja con los valores para pegar en Cloudflare. Nunca al repo.
+# Hojas con valores para pegar en Cloudflare, y claves generadas. Nunca al repo.
 PARA_CLOUDFLARE.local.txt
+*.local.txt
+.clave_admin.raw

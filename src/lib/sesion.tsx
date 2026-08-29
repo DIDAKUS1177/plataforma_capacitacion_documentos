@@ -31,6 +31,8 @@ export interface SesionPersona {
   area: string;
   /** Si ve la pestaña Bases. Lo dice el servidor al entrar. */
   esAdmin: boolean;
+  /** Si esa pestaña pide además la clave. No es secreto: es un sí o un no. */
+  exigeClaveAdmin: boolean;
 }
 
 export type Sesion = SesionPersona | { modo: "manual" } | null;
@@ -42,6 +44,15 @@ interface Valor {
   entrar: (cedula: string, p: Persona) => void;
   entrarSinRegistro: () => void;
   salir: () => void;
+  /**
+   * La clave de la pestaña Bases, mientras dure esta carga de la página.
+   *
+   * Vive SOLO en memoria: no entra a sessionStorage como el resto de la sesión.
+   * Así, moverse entre pestañas dentro de la aplicación no la vuelve a pedir,
+   * pero recargar sí — y nunca queda escrita en el navegador.
+   */
+  claveAdmin: string;
+  fijarClaveAdmin: (v: string) => void;
 }
 
 const CLAVE = "adc-sesion";
@@ -67,6 +78,7 @@ function guardar(s: Sesion) {
 
 export function ProveedorSesion({ children }: { children: ReactNode }) {
   const [sesion, setSesion] = useState<Sesion>(leerGuardada);
+  const [claveAdmin, fijarClaveAdmin] = useState("");
 
   const entrar = useCallback((cedula: string, p: Persona) => {
     const nueva: SesionPersona = {
@@ -77,6 +89,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       cargo: p.cargo || "",
       area: p.area || "",
       esAdmin: !!p.esAdmin,
+      exigeClaveAdmin: !!p.exigeClaveAdmin,
     };
     setSesion(nueva);
     guardar(nueva);
@@ -90,6 +103,7 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
 
   const salir = useCallback(() => {
     setSesion(null);
+    fijarClaveAdmin("");
     guardar(null);
   }, []);
 
@@ -100,8 +114,10 @@ export function ProveedorSesion({ children }: { children: ReactNode }) {
       entrar,
       entrarSinRegistro,
       salir,
+      claveAdmin,
+      fijarClaveAdmin,
     }),
-    [sesion, entrar, entrarSinRegistro, salir],
+    [sesion, entrar, entrarSinRegistro, salir, claveAdmin],
   );
 
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;

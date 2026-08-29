@@ -9,6 +9,12 @@
  * Ocultar la pestaña no es la protección; la protección es que `/api/bases`
  * vuelve a verificar correo y cédula contra la hoja `personal` en cada
  * petición. Aquí solo se decide si se pinta.
+ *
+ * Si el servidor tiene configurada `CLAVE_ADMIN`, primero se pide esa clave.
+ * Se guarda solo en memoria, así que recargar la página la vuelve a pedir pero
+ * moverse entre pestañas no. El servidor responde 404 tanto si la clave está
+ * mal como si la persona no es admin —a propósito—, así que el texto de "clave
+ * incorrecta" lo pone esta pantalla, que ya sabe que sí es admin.
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -18,13 +24,14 @@ import {
   ClipboardList,
   Clock,
   Download,
+  KeyRound,
   Lightbulb,
   RefreshCw,
   Users,
 } from "lucide-react";
 import { ErrorApi, obtenerBases, type Bases } from "../api/cliente";
 import { useSesion } from "../lib/sesion";
-import { Aviso, Boton, Cargando, Tarjeta, Titulo } from "../components/ui";
+import { Aviso, Boton, CampoTexto, Cargando, Tarjeta, Titulo } from "../components/ui";
 
 type Seccion = "resumen" | "constancias" | "inicios" | "mejoras" | "pendientes" | "personal";
 
@@ -38,31 +45,45 @@ const SECCIONES: { id: Seccion; texto: string; icono: typeof Users }[] = [
 ];
 
 export function BasesPage() {
-  const { persona } = useSesion();
+  const { persona, claveAdmin, fijarClaveAdmin } = useSesion();
   const [datos, setDatos] = useState<Bases | null>(null);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(true);
   const [seccion, setSeccion] = useState<Seccion>("resumen");
   const [filtro, setFiltro] = useState("");
 
+  // Falta la clave: no se pide nada al servidor todavía.
+  const pideClave = !!persona?.exigeClaveAdmin && !claveAdmin;
+
   const traer = useCallback(async () => {
-    if (!persona) return;
+    if (!persona || (persona.exigeClaveAdmin && !claveAdmin)) {
+      setCargando(false);
+      return;
+    }
     setCargando(true);
     setError("");
     try {
-      setDatos(await obtenerBases(persona.correo, persona.cedula));
+      setDatos(await obtenerBases(persona.correo, persona.cedula, claveAdmin || undefined));
     } catch (e) {
-      setError(
-        e instanceof ErrorApi ? e.message : "No se pudieron traer los datos. Intenta otra vez.",
-      );
+      const mensaje = e instanceof ErrorApi ? e.message : "";
+      if (persona.exigeClaveAdmin) {
+        // El servidor contesta 404 sin decir qué falló. Aquí ya sabemos que la
+        // persona es admin, así que lo único que pudo fallar es la clave.
+        fijarClaveAdmin("");
+        setError("La clave no es correcta.");
+      } else {
+        setError(mensaje || "No se pudieron traer los datos. Intenta otra vez.");
+      }
     } finally {
       setCargando(false);
     }
-  }, [persona]);
+  }, [persona, claveAdmin, fijarClaveAdmin]);
 
   useEffect(() => {
     traer();
   }, [traer]);
+
+  if (pideClave) return <PedirClave error={error} alEnviar={fijarClaveAdmin} />;
 
   if (cargando && !datos) return <Cargando texto="Trayendo las bases…" />;
 
@@ -122,6 +143,48 @@ export function BasesPage() {
         <Listado datos={datos} seccion={seccion} filtro={filtro} alFiltrar={setFiltro} />
       )}
     </>
+  );
+}
+
+/* -------------------------------------------------------------------- clave */
+
+function PedirClave({ error, alEnviar }: { error: string; alEnviar: (v: string) => void }) {
+  const [clave, setClave] = useState("");
+
+  return (
+    <Tarjeta>
+      <Titulo meta="Va además de tu correo y tu cédula. Se pide una vez por sesión; al recargar la página se vuelve a pedir.">
+        Clave de Bases
+      </Titulo>
+
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (clave.trim()) alEnviar(clave.trim());
+        }}
+      >
+        <CampoTexto
+          etiqueta="Clave"
+          tipo="password"
+          valor={clave}
+          alCambiar={setClave}
+          autoCompletar="current-password"
+        />
+
+        {error && <Aviso tono="mal">{error}</Aviso>}
+
+        <div className="mt-4">
+          <Boton tipo="submit">
+            <KeyRound size={15} /> Abrir
+          </Boton>
+        </div>
+      </form>
+
+      <p className="mt-4 text-xs text-ink-500">
+        Esta pantalla muestra el listado completo de personal, con cédulas y
+        correos. Por eso pide algo más que la cédula, que no es un secreto.
+      </p>
+    </Tarjeta>
   );
 }
 

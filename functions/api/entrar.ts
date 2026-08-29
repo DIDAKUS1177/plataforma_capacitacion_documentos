@@ -77,6 +77,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
       // Solo para decidir si se pinta la pestaña. No da acceso a nada: quien
       // se lo ponga a mano en la sesión verá la pestaña y un 404 detrás.
       esAdmin: esCedulaAdmin(env, cedula),
+      // Si hay que pedir la segunda clave. Se dice ÚNICAMENTE a quien ya es
+      // admin: al resto no le llega ni la palabra "clave".
+      exigeClaveAdmin: esCedulaAdmin(env, cedula) && !!env.CLAVE_ADMIN,
       nombre: titulo(fila[COL.nombre] || ""),
       correo: (fila[COL.correo] || "").trim().toLowerCase(),
       cargo: titulo(fila[COL.cargo] || ""),

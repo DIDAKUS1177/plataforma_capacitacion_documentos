@@ -46,6 +46,8 @@ export interface Persona {
   cedula?: string;
   /** Si ve la pestaña Bases. Lo decide el servidor, no el navegador. */
   esAdmin?: boolean;
+  /** Si la pestaña Bases pide además la clave. Solo se le dice a un admin. */
+  exigeClaveAdmin?: boolean;
   nombre?: string;
   correo?: string;
   cargo?: string;
@@ -200,7 +202,11 @@ export interface Bases {
  * Trae todo lo que guarda la plataforma. Manda otra vez correo y cédula porque
  * el servidor no le cree a la sesión del navegador: la vuelve a verificar.
  */
-export async function obtenerBases(correo: string, cedula: string): Promise<Bases> {
-  const r = await enviar<Bases>("/api/bases", { correo, cedula });
+export async function obtenerBases(
+  correo: string,
+  cedula: string,
+  clave?: string,
+): Promise<Bases> {
+  const r = await enviar<Bases>("/api/bases", { correo, cedula, clave });
   return r.datos as Bases;
 }
