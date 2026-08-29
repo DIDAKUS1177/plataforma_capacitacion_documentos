@@ -44,3 +44,20 @@ LISTADO_MAESTRO_HOJA="Listado Maestro "
 
 # Quien dicta la capacitacion. Va en la constancia (campo del F-SIG-19).
 EXPOSITOR="Diego Alejandro Hernandez Blanco"
+
+# --- Avisos automáticos -----------------------------------------------------
+# Protege POST /api/notificar, que dispara los correos de respuesta del buzón.
+# La usa el Worker `adc-notificador`. Vacía = el endpoint no funciona.
+CLAVE_NOTIFICACIONES=""
+
+# --- Pestaña Bases ----------------------------------------------------------
+# Cédulas que ven la pestaña, separadas por coma. Vacío = nadie la ve.
+# NUNCA en el código del navegador: la cédula es la mitad de la credencial de
+# entrada, así que publicarla en el bundle sería regalarla.
+CEDULAS_ADMIN=""
+
+# Segunda clave de esa pestaña. Vacía = basta con el correo y la cédula.
+# Vale la pena ponerla: esa pantalla muestra el listado completo de personal,
+# con cédulas y correos, y la cédula no es un secreto.
+# En desarrollo debe ser DISTINTA de la de producción.
+CLAVE_ADMIN=""
