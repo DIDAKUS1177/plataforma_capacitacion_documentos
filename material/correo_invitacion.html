@@ -1,0 +1,157 @@
+<!--
+  Versión HTML de la invitación. Se abre en el navegador, se selecciona todo
+  (Ctrl+A), se copia y se pega en Gmail o en Outlook: el formato viaja.
+
+  Está armada con tablas y estilos en línea, no con flex ni con hojas de estilo,
+  porque Outlook de escritorio usa el motor de Word y descarta casi todo el CSS
+  moderno. Y no lleva ninguna imagen: la mayoría de los clientes corporativos
+  bloquean las imágenes remotas por defecto, así que un correo que dependa de
+  ellas llega roto. El color hace el trabajo que haría el logo.
+-->
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+       style="background-color:#f8fafc;padding:24px 12px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600"
+             style="max-width:600px;background-color:#ffffff;border:1px solid #e2e8f0;
+                    border-radius:12px;overflow:hidden;
+                    font-family:Calibri,Arial,Helvetica,sans-serif;">
+
+        <!-- Franja de la casa -->
+        <tr>
+          <td style="background-color:#dc2626;padding:18px 28px;">
+            <div style="color:#ffffff;font-size:19px;font-weight:bold;line-height:1.3;">
+              Capacitación del proceso de inspección
+            </div>
+            <div style="color:#fecaca;font-size:13px;padding-top:4px;">
+              25 minutos, desde el celular
+            </div>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:28px;color:#334155;font-size:15px;line-height:1.65;">
+
+            <p style="margin:0 0 14px;">Hola,</p>
+
+            <p style="margin:0 0 14px;">
+              Ya está lista la capacitación sobre el proceso de inspección y la
+              generación automática de reportes. Es sobre lo que hacemos todos
+              los días: desde que te asignan la inspección hasta que sale el
+              reporte que se le entrega al cliente. Está basada en el
+              instructivo <strong>IT-OPE-C-12</strong>.
+            </p>
+
+            <!-- Botón. Va como celda de tabla y no como <button>: Outlook no
+                 pinta los botones de HTML. -->
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                   style="margin:22px 0;">
+              <tr>
+                <td style="background-color:#dc2626;border-radius:8px;">
+                  <a href="https://adc-capacitacion.pages.dev"
+                     style="display:inline-block;padding:13px 26px;color:#ffffff;
+                            font-size:15px;font-weight:bold;text-decoration:none;">
+                    Hacer la capacitación
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 6px;font-size:13px;color:#64748b;">
+              O copia este enlace:
+              <span style="color:#334155;">https://adc-capacitacion.pages.dev</span>
+            </p>
+
+            <hr style="border:0;border-top:1px solid #e2e8f0;margin:22px 0;">
+
+            <p style="margin:0 0 10px;font-weight:bold;color:#0f172a;">
+              Para entrar necesitas dos cosas
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td style="padding:0 0 8px 0;color:#334155;font-size:15px;line-height:1.6;">
+                  &bull;&nbsp; <strong>Tu correo corporativo</strong>, el mismo al
+                  que te llegó este mensaje.
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 8px 0;color:#334155;font-size:15px;line-height:1.6;">
+                  &bull;&nbsp; <strong>Tu número de cédula</strong>, sin puntos ni
+                  comas.
+                </td>
+              </tr>
+            </table>
+
+            <!-- Esta advertencia no es relleno: el correo pide entrar a un
+                 dominio que no es de la empresa, que es la forma exacta de un
+                 phishing. Decirlo de frente es lo que lo separa de uno. -->
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                   style="background-color:#fef2f2;border-left:3px solid #dc2626;
+                          border-radius:6px;margin:16px 0;">
+              <tr>
+                <td style="padding:12px 14px;color:#991b1b;font-size:14px;line-height:1.55;">
+                  No te pedimos la contraseña del correo ni ninguna otra clave.
+                  Si alguna página te pide la contraseña de tu correo, no es
+                  esta: ciérrala y avísame.
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0 0 14px;">
+              Toma unos <strong>25 minutos</strong> y se puede hacer desde el
+              celular. Son la presentación, el instructivo, un repaso de los
+              puntos clave y una evaluación de 8 preguntas; se aprueba con 6. Si
+              no la pasas la puedes repetir, no queda penalizado nada.
+            </p>
+
+            <p style="margin:0 0 14px;">
+              Al empezar te pide escoger <strong>el formato sobre el que
+              trabajas</strong> (espesores, partículas magnéticas, visual de
+              recipientes, el que sea). El contenido es el mismo para todos; eso
+              es solo para que quede en tu constancia.
+            </p>
+
+            <p style="margin:0 0 14px;">
+              Cuando termines te llega <strong>la constancia al correo</strong>.
+              Esa constancia reemplaza el formato de asistencia en papel
+              (F-SIG-19), así que no hay que firmar nada más ni mandar nada de
+              vuelta.
+            </p>
+
+            <hr style="border:0;border-top:1px solid #e2e8f0;margin:22px 0;">
+
+            <p style="margin:0 0 10px;font-weight:bold;color:#0f172a;">
+              Una cosa más
+            </p>
+            <p style="margin:0 0 14px;">
+              En la misma página hay una pestaña para <strong>reportar fallas de
+              las aplicaciones o proponer mejoras</strong>. Esa no pide entrar
+              con nada. Si una app se te cae, si un formato te pide algo que en
+              campo no tiene sentido, o si se te ocurre cómo hacerlo más rápido,
+              escríbelo ahí: cada reporte queda con un número y se responde. Es
+              la vía para que eso deje de quedarse en el comentario de pasillo.
+            </p>
+
+            <p style="margin:0 0 22px;">
+              Si tu correo o tu cédula no te dejan entrar, escríbeme y lo reviso.
+              Puede ser que el dato esté desactualizado en el listado de Talento
+              Humano.
+            </p>
+
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"
+                   style="border-top:1px solid #e2e8f0;">
+              <tr>
+                <td style="padding-top:16px;color:#64748b;font-size:13px;line-height:1.6;">
+                  <strong style="color:#334155;">Diego Alejandro Hernández Blanco</strong><br>
+                  Ingeniero de Desarrollo e Integridad<br>
+                  Área de desarrollo — ADEMINCOL S.A.S.
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>

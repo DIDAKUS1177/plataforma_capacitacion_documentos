@@ -242,6 +242,24 @@ npx wrangler pages secret delete CLAVE_ADMIN --project-name adc-capacitacion
 Sin la variable, la pestaña vuelve a pedir solo correo y cédula. El código
 contempla las dos situaciones.
 
+### Invitar a la gente
+
+Los textos están en `material/correo_invitacion.md`: la invitación, un
+recordatorio para dos semanas después y una línea corta para WhatsApp o para la
+descripción de las apps. La versión con formato está en
+`material/correo_invitacion.html` — se abre en el navegador, se copia y se pega
+en Gmail o en Outlook.
+
+Va con **copia oculta**: 102 correos en el encabezado es regalar el directorio.
+
+**Un pendiente que vale la pena:** el correo pide entrar a `adc-capacitacion.pages.dev`
+y escribir el correo corporativo, que es la forma exacta de un ataque de
+suplantación. El texto lo dice de frente —"no te pedimos la contraseña del
+correo"—, pero lo que lo resolvería de raíz es poner la plataforma en un
+subdominio propio, `capacitacion.ademincol.com.co`. En Cloudflare Pages no
+cuesta nada: se agrega el dominio en el proyecto y un registro CNAME en el DNS
+de ademincol.com.co. Requiere quien administre ese DNS.
+
 ### El ciclo del buzón
 
 1. El inspector reporta y recibe un acuse con su número y el enlace de consulta.
